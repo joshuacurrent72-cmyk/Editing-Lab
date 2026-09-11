@@ -853,3 +853,37 @@
     cursor: pointer;
   }
 </style>
+<!-- Add inside <body>, before </body> -->
+<button id="chat-start">💬 Chat</button>
+
+<script>
+  function startChat() {
+    // Replace with your AI chat logic
+    alert("Chat started!");
+  }
+
+  const chatButton = document.getElementById("chat-start");
+
+  // Use pointer events (covers mouse + touch)
+  chatButton.addEventListener("pointerdown", function(e) {
+    e.preventDefault();
+    startChat();
+  });
+</script>
+
+<style>
+  #chat-start {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 14px 22px;
+    font-size: 18px;
+    background: #0078d7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    z-index: 9999;
+    cursor: pointer;
+    touch-action: manipulation; /* ensures taps register */
+  }
+</style>
