@@ -949,3 +949,69 @@
     display: flex;
     padding: 10px;
     background
+<!-- Chat box -->
+<div id="chat-box">
+  <div id="chat-messages"></div>
+  <input 
+    type="text" 
+    id="chat-input" 
+    placeholder="Type your message..." 
+    autocomplete="off"
+  />
+  <button id="send-btn">Send</button>
+</div>
+
+<script>
+  const input = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-btn");
+  const messages = document.getElementById("chat-messages");
+
+  sendBtn.addEventListener("click", () => {
+    const message = input.value.trim();
+    if (message) {
+      const msgDiv = document.createElement("div");
+      msgDiv.textContent = "You: " + message;
+      messages.appendChild(msgDiv);
+
+      input.value = "";
+
+      const aiDiv = document.createElement("div");
+      aiDiv.textContent = "AI: (response goes here)";
+      messages.appendChild(aiDiv);
+    }
+  });
+</script>
+
+<style>
+  #chat-box {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #f1f1f1;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    z-index: 9999;
+  }
+  #chat-messages {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  #chat-input {
+    padding: 10px;
+    font-size: 16px;
+    flex: 1;
+  }
+  #send-btn {
+    padding: 10px 16px;
+    margin-top: 8px;
+    background: #0078d7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+  }
+</style>
