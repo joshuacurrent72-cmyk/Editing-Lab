@@ -126,6 +126,7 @@
             padding: 12px 15px;
             border-radius: 8px;
             animation: fadeIn 0.3s ease-in;
+            word-wrap: break-word;
         }
         
         @keyframes fadeIn {
@@ -152,6 +153,7 @@
             margin-right: 20px;
             border-radius: 15px 15px 15px 0;
             border-left: 3px solid #667eea;
+            white-space: pre-wrap;
         }
         
         .ai-message strong {
@@ -200,6 +202,11 @@
         .send-button:hover {
             background: #1a1a1a;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .send-button:disabled {
+            background: #666;
+            cursor: not-allowed;
         }
         
         .container {
@@ -307,19 +314,37 @@
             margin-bottom: 20px;
         }
         
-        .loading {
-            display: inline-block;
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            margin: 10px 0;
+        }
+        
+        .typing-dot {
             width: 8px;
             height: 8px;
             background: #667eea;
             border-radius: 50%;
-            animation: pulse 1.5s infinite;
-            margin-right: 5px;
+            animation: typing 1.4s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.5;
+                transform: translateY(0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-10px);
+            }
         }
     </style>
 </head>
@@ -337,8 +362,15 @@
         </div>
         <div class="ai-chat-messages" id="chatMessages">
             <div class="ai-message">
-                <strong>Welcome to AI Editing Assistant!</strong><br>
-                Ask me anything about video editing in After Effects, CapCut, DaVinci Resolve, Premiere Pro, Final Cut Pro, or Sony Vegas. I'll guide you step-by-step! 🎬
+                <strong>Welcome to AI Editing Assistant!</strong><br><br>
+                I'm powered by advanced AI to help you with video editing across all platforms:<br>
+                • After Effects<br>
+                • CapCut<br>
+                • DaVinci Resolve<br>
+                • Premiere Pro<br>
+                • Final Cut Pro<br>
+                • Sony Vegas<br><br>
+                Ask me anything and get instant, accurate step-by-step guidance! 🎬
             </div>
         </div>
         <div class="ai-chat-input-area">
@@ -349,7 +381,7 @@
                 placeholder="Ask me how to... (e.g., add a transition in CapCut)" 
                 onkeypress="handleEnter(event)"
             >
-            <button class="send-button" onclick="sendMessage()">📤</button>
+            <button class="send-button" id="sendBtn" onclick="sendMessage()">📤</button>
         </div>
     </div>
     
@@ -395,7 +427,7 @@
             <div class="features">
                 <div class="feature">
                     <h3>🤖 AI Chatbot</h3>
-                    <p>Real-time guidance powered by advanced AI</p>
+                    <p>Powered by advanced AI for accurate, instant responses</p>
                 </div>
                 <div class="feature">
                     <h3>📱 Multi-Platform</h3>
@@ -403,11 +435,11 @@
                 </div>
                 <div class="feature">
                     <h3>📚 Smart Learning</h3>
-                    <p>Lessons adapt to your skill level</p>
+                    <p>Detailed step-by-step guides tailored to your software</p>
                 </div>
                 <div class="feature">
-                    <h3>🎯 Project-Based</h3>
-                    <p>Learn by creating real projects</p>
+                    <h3>⚡ Lightning Fast</h3>
+                    <p>Get answers instantly without waiting</p>
                 </div>
             </div>
         </div>
@@ -416,8 +448,8 @@
             <h2>🚀 How It Works</h2>
             <ol style="font-size: 1.1em; line-height: 2;">
                 <li><strong>YOU</strong> → Describe what edit you want to create</li>
-                <li><strong>AI</strong> → Analyzes your question and provides accurate guidance</li>
-                <li><strong>LEARN</strong> → Follow step-by-step instructions with platform-specific details</li>
+                <li><strong>AI</strong> → Instantly analyzes and provides accurate guidance</li>
+                <li><strong>LEARN</strong> → Follow detailed step-by-step instructions specific to your software</li>
                 <li><strong>CREATE</strong> → Make amazing edits!</li>
             </ol>
         </div>
@@ -436,35 +468,521 @@
     </footer>
     
     <script>
-        // AI Knowledge Base - Responses for different editing queries
-        const aiKnowledge = {
+        // Comprehensive Editing Knowledge Base with accurate, detailed information
+        const editingKnowledge = {
             transitions: {
-                capcut: "In CapCut: 1) Select the clip you want → 2) Tap 'Transition' at the bottom → 3) Choose your transition type (Fade, Slide, Zoom, etc.) → 4) Adjust duration (usually 0.3-0.5s is good) → 5) Preview and apply. Pro tip: Avoid overusing transitions!",
-                premiere: "In Premiere Pro: 1) Go to Effects panel → 2) Search 'Video Transitions' → 3) Drag transition between clips → 4) Double-click to customize duration and settings → 5) Preview with spacebar. Common transitions: Cross Dissolve, Dip to Black.",
-                aftereffects: "In After Effects: 1) Select your layer → 2) Right-click → Time → Freeze Frame or use Transition effect → 3) Go to Effects > Transition → 4) Choose transition and adjust settings → 5) Preview with spacebar. AE is best for custom transitions!",
-                davinci: "In DaVinci Resolve: 1) Go to Edit page → 2) Select clips to transition → 3) Open Transitions panel on left → 4) Drag transition between clips → 5) Adjust duration in inspector on right. DaVinci has great built-in transitions!",
-                finalcut: "In Final Cut Pro: 1) Go to Transitions browser → 2) Drag transition between clips → 3) Adjust duration in inspector (right panel) → 4) Fine-tune parameters → 5) Preview with spacebar."
+                capcut: `In CapCut (Mobile & Desktop):
+
+STEP-BY-STEP:
+1. Open your project in CapCut
+2. In the timeline, select the first clip you want to add a transition to
+3. Tap the "Transition" button at the bottom of the screen
+4. Browse through available transitions (Fade, Slide, Push, Zoom, etc.)
+5. Select your desired transition effect
+6. Adjust the transition duration (0.3s to 0.5s recommended)
+7. Preview the transition by pressing play
+8. Export your video
+
+BEST PRACTICES:
+• Use Cross Fade for smooth cuts between similar shots
+• Use Push or Slide for dynamic transitions
+• Keep transitions under 0.5 seconds for a professional look
+• Avoid using the same transition repeatedly`,
+
+                premiere: `In Adobe Premiere Pro:
+
+STEP-BY-STEP:
+1. Import your video clips into Premiere Pro
+2. Arrange your clips on the timeline
+3. Click the "Effects" panel on the left side (or press Shift+7)
+4. Search for "Video Transitions" in the Effects panel
+5. Popular transitions: Cross Dissolve, Dip to Black, Fade, Slide
+6. Drag and drop the transition between two clips
+7. Double-click the transition to adjust:
+   - Duration (typically 0.3-1.0 seconds)
+   - Alignment (centered, at cut, etc.)
+8. Preview using spacebar
+9. Export your sequence
+
+PRO TIPS:
+• Default transition duration is 30 frames (check your timeline)
+• Use "Cross Dissolve" for quick, professional cuts
+• Adjust handles to control transition timing`,
+
+                aftereffects: `In Adobe After Effects:
+
+STEP-BY-STEP:
+1. Create a new composition with your video footage
+2. Import your video files or create layers
+3. Go to Effects > Transition in the menu
+4. Popular transitions: Page Turn, Card Dance, Slide
+5. Drag the transition effect between layers
+6. In the Effect Controls panel, set:
+   - Transition Duration (usually 0.5-2 seconds)
+   - Direction
+7. Set keyframes at the point where transition occurs
+8. Preview with spacebar
+9. Render your composition (Composition > Add to Render Queue)
+
+ADVANCED:
+• Use Masks for custom transition effects
+• Combine multiple transitions for unique effects
+• Use Ease Expressions for smoother transitions`,
+
+                davinci: `In DaVinci Resolve:
+
+STEP-BY-STEP:
+1. Go to the Edit page in DaVinci Resolve
+2. Arrange your clips on the timeline
+3. Click the "Transitions" panel on the left side
+4. Browse available transitions (Dissolve, Push, Zoom, etc.)
+5. Select a transition from the library
+6. Drag it between two clips on the timeline
+7. In the Inspector panel (right side):
+   - Set transition duration (usually 0.3-0.5s)
+   - Adjust Direction and other parameters
+8. Preview with spacebar
+9. Export your project
+
+DAVINCI ADVANTAGES:
+• Free version has excellent transitions
+• Smooth 4K transition support
+• Real-time preview without rendering`,
+
+                finalcut: `In Final Cut Pro:
+
+STEP-BY-STEP:
+1. Open your project in Final Cut Pro
+2. Arrange clips on the timeline
+3. Click on Transitions in the top menu
+4. Browse available transitions
+5. Drag transition between clips (or double-click between clips)
+6. In the Inspector panel (right side):
+   - Adjust duration
+   - Fine-tune parameters
+7. Preview with spacebar
+8. Export your project
+
+KEYBOARD SHORTCUTS:
+• Cmd+T: Add default transition
+• Adjust handles to change transition timing`
             },
+
             colorgrading: {
-                davinci: "DaVinci Resolve is THE COLOR GRADING tool! 1) Go to Color tab → 2) Use Curves for precise control → 3) Adjust Lift (shadows), Gamma (mids), Gain (highlights) → 4) Use LUTs for creative looks → 5) Use Color Wheels for specific color ranges. Try the Fusion tab for advanced VFX!",
-                capcut: "Basic color in CapCut: 1) Select clip → 2) Tap 'Adjust' → 3) Use Brightness, Contrast, Saturation sliders → 4) Try Filters tab for preset looks → 5) Adjust until you like it. CapCut is good for quick edits, but DaVinci is better for serious color work.",
-                premiere: "Color Grading in Premiere: 1) Select clip → 2) Effects > Lumetri Color → 3) Adjust Basic Correction panel → 4) Use Curves for advanced work → 5) Save as presets for consistency. Premiere integrates well with After Effects!"
+                davinci: `In DaVinci Resolve (Best for Color Grading):
+
+STEP-BY-STEP:
+1. Import your footage into DaVinci Resolve
+2. Go to the "Color" page (top tabs)
+3. Select a clip from the timeline
+4. In the Color page, you'll see color correction tools
+
+BASIC ADJUSTMENTS:
+• Lift/Gamma/Gain panel (left side):
+  - Lift: Adjust shadows (dark areas)
+  - Gamma: Adjust midtones (middle brightness)
+  - Gain: Adjust highlights (bright areas)
+
+ADVANCED GRADING:
+• Curves: Click on curves for precise color control
+• Sat (Saturation): Increase or decrease color intensity
+• Color Wheels: Adjust specific color ranges (shadows, mids, highlights)
+• LUTs: Apply preset looks for cinema-style grading
+
+STEP-BY-STEP WORKFLOW:
+1. Apply primary correction (basic brightness/contrast)
+2. Use curves for precise tonal adjustments
+3. Apply secondary color correction (adjust specific colors)
+4. Use power windows to grade specific areas
+5. Add node for each adjustment type
+6. Save your grade as a preset
+
+PRO TIPS:
+• Use Color Wheels for color-graded look
+• Combine multiple nodes for complex grades
+• Watch waveform monitor while grading`,
+
+                capcut: `In CapCut (Quick Color Grading):
+
+STEP-BY-STEP:
+1. Select a video clip in your timeline
+2. Tap "Adjust" button at the bottom
+3. Available adjustments:
+   - Brightness: Increase/decrease overall brightness
+   - Contrast: Increase visual punch
+   - Saturation: Increase color intensity
+   - Hue: Shift color tones
+   - Temperature: Add warm/cool tones
+4. Adjust sliders to your preference
+5. For presets, go to "Filters" tab
+6. Apply and preview
+7. Export when satisfied
+
+QUICK CINEMA LOOK:
+• Slightly decrease brightness
+• Increase contrast
+• Add warm temperature
+• Apply blue shadows filter (Filters tab)`,
+
+                premiere: `In Adobe Premiere Pro (Lumetri Color):
+
+STEP-BY-STEP:
+1. Select your video clip on the timeline
+2. Go to Effects > Color Correction > Lumetri Color
+3. In the Effect Controls panel, adjust:
+
+BASIC CORRECTION:
+• Input Levels: Adjust black/white point
+• Shadows: Brighten or darken dark areas
+• Midtones: Adjust middle brightness
+• Highlights: Brighten or darken bright areas
+• Saturation: Increase/decrease color intensity
+
+CREATIVE:
+• Curves: Use for advanced color work
+• Color Wheels: Grade shadows/mids/highlights separately
+• Hue Saturation: Target specific colors
+
+SAVE PRESET:
+• Click gear icon → Save As Preset
+• Reuse on other clips for consistency
+
+PRO WORKFLOW:
+1. Apply primary correction first
+2. Use curves for tonal adjustments
+3. Apply creative LUTs from Adjustments tab
+4. Fine-tune with Color Wheels`
             },
+
             export: {
-                capcut: "Export in CapCut: 1) Finish editing → 2) Tap 'Export' → 3) Choose resolution (1080p for YouTube, 720p for Instagram) → 4) Select frame rate (30fps smooth, 60fps for action) → 5) Tap 'Export' → 6) Choose location and wait. CapCut exports are usually MP4.",
-                premiere: "Export in Premiere: 1) File → Export → Media (Ctrl+Alt+M) → 2) Choose preset (YouTube 1080p, etc.) → 3) Set output location → 4) Adjust codec to H.264 → 5) Adjust bitrate (YouTube: 8-12 Mbps for 1080p) → 6) Click Export.",
-                aftereffects: "Export in AE: 1) Composition → Add to Render Queue → 2) Select Output Module settings → 3) Choose H.264 codec → 4) Adjust bitrate → 5) Set output location → 6) Click 'Render'. AE renders can take time!"
+                capcut: `In CapCut (Export Settings):
+
+STEP-BY-STEP:
+1. Finish editing your project
+2. Tap the "Export" button (usually bottom right)
+3. Choose your export quality:
+   - 1080p: YouTube, most platforms (recommended)
+   - 720p: Instagram, TikTok, stories
+   - 480p: Quick previews, mobile
+   - 4K: High-quality archival
+
+FRAME RATE:
+• 24fps: Cinematic feel
+• 30fps: Default smooth playback
+• 60fps: Action, sports, smooth motion
+
+FORMAT:
+• MP4: Universal format (recommended)
+• MOV: Apple devices
+• MKV: High-quality storage
+
+AUDIO:
+• Keep audio enabled unless exporting silent
+• Stereo recommended for most platforms
+
+AFTER EXPORT:
+• File saves as MP4 to your device
+• From CapCut, share directly to social media
+• Typical file sizes: 1080p = 300-500MB per 10 minutes`,
+
+                premiere: `In Adobe Premiere Pro (Export):
+
+STEP-BY-STEP:
+1. File Menu → Export → Media (or Ctrl+Alt+M)
+2. Choose preset based on platform:
+   - YouTube 1080p
+   - Instagram
+   - Facebook
+   - Device specific (iPhone, Android)
+3. In Export Settings:
+   - Video Codec: H.264 (most compatible)
+   - Frame Rate: Match your project (24/30/60fps)
+   - Bitrate: 
+     * YouTube 1080p: 8-12 Mbps
+     * 4K: 35-45 Mbps
+     * Instagram: 6-8 Mbps
+
+OUTPUT AUDIO:
+• Sample Rate: 48kHz (standard)
+• Channels: Stereo (2 channels)
+• Bitrate: 256-320 kbps
+
+EXPORT PROCESS:
+1. Set output location
+2. Name your file
+3. Click "Export"
+4. Wait for encoding to complete
+5. Video ready to upload
+
+TIME ESTIMATION:
+• Rendering time depends on resolution and effects
+• 4K takes 2-3x longer than 1080p`,
+
+                aftereffects: `In After Effects (Render):
+
+STEP-BY-STEP:
+1. Composition Menu → Add to Render Queue
+2. In Render Queue panel, set:
+   - Output Module: Lossless or ProRes
+   - Output File Location
+3. For faster exports, use H.264:
+   - Output Module → Click "Lossless"
+   - Change to H.264
+4. Click "Render" button
+5. Wait for render to complete
+
+RENDER SETTINGS:
+• Quality: Best (high quality but slower)
+• Resolution: Full (100%)
+• Frame Rate: Match composition (24/30/60fps)
+
+TIME ESTIMATE:
+• After Effects renders complex effects slowly
+• Simple 1-minute clip: 5-15 minutes
+• Complex VFX: 30+ minutes per minute of footage
+
+PRO TIP:
+• Use "Draft Settings" while working
+• Switch to "Best Settings" for final export
+• Multi-frame rendering speeds up process (Preferences)`
             },
+
             greenscreen: {
-                davinci: "Green Screen Keying in DaVinci: 1) Go to Color page → 2) Qualifier tool → 3) Click on green background → 4) Adjust Hue Range to isolate green → 5) Use Saturation threshold → 6) Add blur to edges for realism. DaVinci's keyer is professional-grade!",
-                capcut: "Green Screen in CapCut: 1) Import foreground video → 2) Tap 'Chroma Key' → 3) Select green color → 4) Adjust Similarity & Smoothness → 5) Add background video below → 6) Preview and export. Simple but effective!",
-                premiere: "Ultra Key in Premiere: 1) Select foreground clip → 2) Effects > Keying > Ultra Key → 3) Click eyedropper on green → 4) Adjust Transparency in Effect Controls → 5) Refine edges with Spill Suppressor. Premiere's keying is very accurate!"
+                davinci: `In DaVinci Resolve (Professional Green Screen):
+
+STEP-BY-STEP:
+1. Go to the Color page
+2. Select your green screen clip
+3. Click on "Qualifier" tool (left panel)
+4. In Qualifier settings:
+   - Click eyedropper on green background
+   - This selects the green color to remove
+
+REFINE KEYING:
+• Hue Range: Adjust to isolate green only
+• Saturation Range: Control saturation selection
+• Lightness Range: Adjust brightness matching
+
+EDGE REFINEMENT:
+• Blur: Add 1-2 pixels to smooth edges
+• Shrink: Tighten selection around subject
+• Grow: Expand selection if needed
+
+FINAL TOUCHES:
+• Add blur to despill green highlights
+• Combine multiple nodes for precision
+• Check with different background clips
+
+DAVINCI KEYING TIPS:
+• Use "Pre-Processing" for very bad green screen
+• Combine Qualifier with other tools for best results
+• Professional-grade keying accuracy`,
+
+                capcut: `In CapCut (Quick Green Screen):
+
+STEP-BY-STEP:
+1. Import your green screen video
+2. Place it above your background video on timeline
+3. Select the green screen clip
+4. Tap "Chroma Key" button
+5. Click on the green color to remove:
+   - CapCut auto-selects green
+6. Adjust sliders:
+   - Similarity: How close colors must match (50-80 recommended)
+   - Smoothness: Edge smoothness (30-60 recommended)
+7. Preview the result
+8. Add any additional adjustments
+9. Export
+
+BACKGROUND OPTIONS:
+• Upload custom background image/video
+• Use solid colors
+• Use blur effect
+
+TROUBLESHOOTING:
+• If edges look jagged: Increase Smoothness
+• If too much green remains: Increase Similarity
+• If subject is cut off: Decrease Similarity`,
+
+                premiere: `In Premiere Pro (Ultra Key Effect):
+
+STEP-BY-STEP:
+1. Place green screen clip on V2 track
+2. Place background on V1 track
+3. Select green screen clip
+4. Effects > Keying > Ultra Key
+5. In Effect Controls:
+   - Matte Color: Click eyedropper on green
+   - Click the green area to select it
+6. Adjust settings:
+   - Tolerance: How strict the key is (20-40 recommended)
+   - Highlight: Shows green areas (watch this)
+   - Shadow: Shows shadow areas
+
+SPILL SUPPRESSION:
+• After keying, add Spill Suppressor
+• Removes green tint from edges
+• Adjust Saturation and Lightness
+
+FINAL TOUCHES:
+• Add slight blur to edges if needed
+• Adjust Matte Cleanup
+• Add Color Corrector for subject matching
+
+PREMIERE KEYING ADVANTAGES:
+• Very accurate keying algorithm
+• Built-in spill suppression
+• Easy integration with other effects`
             },
+
             textanimation: {
-                capcut: "Text Animation in CapCut: 1) Tap 'Text' → 2) Type your text → 3) Tap 'Style' for fonts → 4) Tap 'Animation' → 5) Choose entrance & exit effects → 6) Adjust timing and preview. Quick and easy!",
-                aftereffects: "Text Animation in AE: 1) Type → Text layer → 2) Effects > Text > Animate → 3) Add Animator → 4) Choose property (Position, Scale, Opacity) → 5) Set keyframes → 6) Preview. AE gives unlimited animation control!",
-                premiere: "Essential Graphics for text in Premiere: 1) Create text → 2) Go to Essential Graphics panel → 3) Add effects or use motion presets → 4) Keyframe animate if needed → 5) Preview. Integrated and easy!"
-            }
+                capcut: `In CapCut (Text Animation):
+
+STEP-BY-STEP:
+1. Tap "Text" button in bottom toolbar
+2. Type your text
+3. Position text on screen
+4. In text editor, customize:
+   - Font: Choose from library
+   - Size: Adjust text size
+   - Color: Pick text color
+5. For animation:
+   - Tap "Animation" button
+   - Choose entrance effect (Fade In, Slide In, Pop, etc.)
+   - Choose exit effect
+6. Adjust animation timing:
+   - Duration: When animation plays
+   - Speed: How fast animation is
+7. Preview and export
+
+CAPCUT TEXT EFFECTS:
+• Built-in animations: 30+ effects
+• Adjustable speed and duration
+• Real-time preview
+• Easy layer management`,
+
+                aftereffects: `In After Effects (Professional Text Animation):
+
+STEP-BY-STEP:
+1. Create new text layer: Type → Text
+2. Type your text and style it
+3. For animation:
+   - Select text layer
+   - Animation > Animate Text
+4. Choose what to animate:
+   - Position: Move from point A to B
+   - Scale: Grow or shrink
+   - Opacity: Fade in/out
+   - Rotation: Spin or flip
+5. Animator will create keyframes
+6. Adjust timing in timeline
+7. Add more animators for complex effects
+
+KEYFRAME WORKFLOW:
+1. Set text layer duration on timeline
+2. Click stopwatch to start keyframing
+3. Move playhead to start
+4. Set initial position/scale/opacity
+5. Move playhead to end
+6. Change values (AE creates keyframes automatically)
+7. Preview with spacebar
+
+ADVANCED TEXT EFFECTS:
+• Text on path: Make text follow curve
+• Separate dimensions: Animate X/Y separately
+• Use expressions for complex motion
+• Ease keyframes for smooth animation`,
+
+                premiere: `In Premiere Pro (Essential Graphics - Text Animation):
+
+STEP-BY-STEP:
+1. Click "Essential Graphics" panel (or Type > Text)
+2. Create new text layer
+3. Type and style your text
+4. Drag onto timeline
+5. For animation:
+   - Select text layer
+   - Right-click → Show Transform
+6. Animate properties:
+   - Position: Move text
+   - Scale: Resize text
+   - Opacity: Fade in/out
+7. Set keyframes:
+   - Click stopwatch next to property
+   - Move playhead
+   - Change value (creates keyframe)
+8. Add motion presets:
+   - Effects > Motion Presets
+   - Drag onto text layer
+
+MOTION PRESETS LIBRARY:
+• Premiere includes preset animations
+• Instant professional-looking text
+• Customize timing and speed
+• Stack multiple effects for complexity`,
+
+                davinci: `In DaVinci Resolve (Text Animation):
+
+STEP-BY-STEP:
+1. Go to Fusion page (bottom tabs)
+2. Add Text tool from toolbar
+3. Type your text
+4. Customize:
+   - Font, size, color
+   - Position on screen
+5. For animation:
+   - Select text
+   - Add keyframes in Inspector
+6. Animate properties:
+   - Position: Click keyframe, move text
+   - Scale: Click keyframe, resize
+   - Opacity: Click keyframe, adjust
+7. Timeline shows animation curve
+8. Preview with spacebar
+
+DAVINCI TEXT ADVANTAGES:
+• 3D text capabilities
+• Advanced compositing options
+• Real-time preview
+• Professional typography controls`
+            },
+
+            general: `Welcome to AI Editing Assistant! 🎬
+
+I can help you with:
+
+✂️ TRANSITIONS
+• How to add transitions between clips
+• Best transition practices
+• Transition timing and duration
+
+🎨 COLOR GRADING
+• Cinematic color grading
+• Quick color fixes
+• Platform-specific color tools
+
+📥 EXPORT/RENDERING
+• Export settings for different platforms
+• Video quality and file size
+• Frame rates and codecs
+
+🟢 GREEN SCREEN/CHROMA KEY
+• Setting up green screen
+• Removing green backgrounds
+• Edge refinement and spill suppression
+
+✨ TEXT ANIMATIONS
+• Animating text elements
+• Text entrance and exit effects
+• Professional text animation techniques
+
+JUST ASK:
+"How do I add a transition in CapCut?"
+"Show me color grading in DaVinci"
+"How do I export for YouTube?"
+"How do I key out a green screen in Premiere?"
+
+I'll give you detailed, step-by-step instructions! 🚀`
         };
 
         function openAIChat() {
@@ -485,128 +1003,101 @@
         function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
+            const sendBtn = document.getElementById('sendBtn');
             
             if (!message) return;
             
-            // Add user message
+            // Disable send button while processing
+            sendBtn.disabled = true;
+            
+            // Add user message immediately
             addMessage(message, 'user');
             input.value = '';
             
-            // Show loading indicator
-            addMessage('Thinking...', 'ai-loading');
+            // Show typing indicator
+            addTypingIndicator();
             
-            // Simulate AI processing
+            // Process and respond (much faster now)
             setTimeout(() => {
+                removeTypingIndicator();
                 const response = generateAIResponse(message);
-                removeLoadingMessage();
                 addMessage(response, 'ai');
-            }, 800);
+                sendBtn.disabled = false;
+            }, 500); // Much shorter delay than before
         }
 
         function generateAIResponse(userMessage) {
             const message = userMessage.toLowerCase();
-            let response = '';
+            
+            // Check transitions
+            if (message.includes('transition') || message.includes('between clips') || message.includes('between two')) {
+                if (message.includes('capcut')) return editingKnowledge.transitions.capcut;
+                if (message.includes('premiere') || message.includes('premiere pro')) return editingKnowledge.transitions.premiere;
+                if (message.includes('after effects') || message.includes('ae')) return editingKnowledge.transitions.aftereffects;
+                if (message.includes('davinci') || message.includes('resolve')) return editingKnowledge.transitions.davinci;
+                if (message.includes('final cut') || message.includes('fcp')) return editingKnowledge.transitions.finalcut;
+                return "Which platform? CapCut, Premiere Pro, After Effects, DaVinci Resolve, or Final Cut Pro?\n\nI'll give you detailed step-by-step instructions!";
+            }
+            
+            // Check color grading
+            if (message.includes('color') || message.includes('grade') || message.includes('grading') || message.includes('color correction') || message.includes('look')) {
+                if (message.includes('davinci') || message.includes('resolve')) return editingKnowledge.colorgrading.davinci;
+                if (message.includes('capcut')) return editingKnowledge.colorgrading.capcut;
+                if (message.includes('premiere')) return editingKnowledge.colorgrading.premiere;
+                return "DaVinci Resolve is best for color grading, but I can also help with:\n• CapCut (quick adjustments)\n• Premiere Pro (Lumetri Color)\n\nWhich do you use?";
+            }
+            
+            // Check export/render
+            if (message.includes('export') || message.includes('render') || message.includes('save video') || message.includes('output')) {
+                if (message.includes('capcut')) return editingKnowledge.export.capcut;
+                if (message.includes('premiere')) return editingKnowledge.export.premiere;
+                if (message.includes('after effects')) return editingKnowledge.export.aftereffects;
+                return "Which platform are you exporting from?\n• CapCut\n• Premiere Pro\n• After Effects\n\nI'll guide you through the export process!";
+            }
+            
+            // Check green screen
+            if (message.includes('green screen') || message.includes('chroma key') || message.includes('keying') || message.includes('remove background') || message.includes('background removal')) {
+                if (message.includes('davinci') || message.includes('resolve')) return editingKnowledge.greenscreen.davinci;
+                if (message.includes('capcut')) return editingKnowledge.greenscreen.capcut;
+                if (message.includes('premiere')) return editingKnowledge.greenscreen.premiere;
+                return "Which platform?\n• DaVinci Resolve (professional)\n• CapCut (quick)\n• Premiere Pro (accurate)\n\nI'll show you how to key out your green screen!";
+            }
+            
+            // Check text animation
+            if (message.includes('text') || message.includes('title') || message.includes('text animation')) {
+                if (message.includes('capcut')) return editingKnowledge.textanimation.capcut;
+                if (message.includes('after effects')) return editingKnowledge.textanimation.aftereffects;
+                if (message.includes('premiere')) return editingKnowledge.textanimation.premiere;
+                if (message.includes('davinci') || message.includes('resolve')) return editingKnowledge.textanimation.davinci;
+                return "Which platform for text animation?\n• CapCut (easiest)\n• Premiere Pro (integrated)\n• After Effects (most advanced)\n• DaVinci Resolve (professional)\n\nI'll show you how!";
+            }
+            
+            // Default/general help
+            return editingKnowledge.general;
+        }
 
-            // Check for transitions
-            if (message.includes('transition') || message.includes('between clips')) {
-                if (message.includes('capcut')) {
-                    response = aiKnowledge.transitions.capcut;
-                } else if (message.includes('premiere') || message.includes('premier pro')) {
-                    response = aiKnowledge.transitions.premiere;
-                } else if (message.includes('after effects') || message.includes('ae')) {
-                    response = aiKnowledge.transitions.aftereffects;
-                } else if (message.includes('davinci') || message.includes('resolve')) {
-                    response = aiKnowledge.transitions.davinci;
-                } else if (message.includes('final cut') || message.includes('fcp')) {
-                    response = aiKnowledge.transitions.finalcut;
-                } else {
-                    response = "I can help with transitions! Which platform are you using? (CapCut, Premiere Pro, After Effects, DaVinci Resolve, or Final Cut Pro?)";
-                }
-            }
-            // Check for color grading
-            else if (message.includes('color') || message.includes('grade') || message.includes('look')) {
-                if (message.includes('davinci') || message.includes('resolve')) {
-                    response = aiKnowledge.colorgrading.davinci;
-                } else if (message.includes('capcut')) {
-                    response = aiKnowledge.colorgrading.capcut;
-                } else if (message.includes('premiere')) {
-                    response = aiKnowledge.colorgrading.premiere;
-                } else {
-                    response = "DaVinci Resolve is the best for color grading! But I can also help with Premiere Pro or CapCut. Which do you use?";
-                }
-            }
-            // Check for export
-            else if (message.includes('export') || message.includes('save') || message.includes('render')) {
-                if (message.includes('capcut')) {
-                    response = aiKnowledge.export.capcut;
-                } else if (message.includes('premiere')) {
-                    response = aiKnowledge.export.premiere;
-                } else if (message.includes('after effects')) {
-                    response = aiKnowledge.export.aftereffects;
-                } else {
-                    response = "Which platform are you exporting from? (CapCut, Premiere Pro, or After Effects?)";
-                }
-            }
-            // Check for green screen
-            else if (message.includes('green screen') || message.includes('chroma') || message.includes('background')) {
-                if (message.includes('davinci') || message.includes('resolve')) {
-                    response = aiKnowledge.greenscreen.davinci;
-                } else if (message.includes('capcut')) {
-                    response = aiKnowledge.greenscreen.capcut;
-                } else if (message.includes('premiere')) {
-                    response = aiKnowledge.greenscreen.premiere;
-                } else {
-                    response = "Green screen keying depends on your platform. Are you using DaVinci, CapCut, or Premiere?";
-                }
-            }
-            // Check for text animation
-            else if (message.includes('text') || message.includes('title')) {
-                if (message.includes('capcut')) {
-                    response = aiKnowledge.textanimation.capcut;
-                } else if (message.includes('after effects')) {
-                    response = aiKnowledge.textanimation.aftereffects;
-                } else if (message.includes('premiere')) {
-                    response = aiKnowledge.textanimation.premiere;
-                } else {
-                    response = "For text animations, which platform? CapCut (easy), Premiere Pro (integrated), or After Effects (advanced)?";
-                }
-            }
-            // General help
-            else if (message.includes('help') || message.includes('what can')) {
-                response = "I can help you with:\n\n✂️ Transitions\n🎨 Color Grading\n📥 Exporting\n🟢 Green Screen Keying\n✨ Text Animation\n\nJust ask me about any of these topics or mention your editing software!";
-            }
-            // Default response
-            else {
-                response = "Great question! I can help with editing techniques in After Effects, CapCut, DaVinci Resolve, Premiere Pro, Final Cut Pro, and more.\n\nTry asking me about:\n• How to add transitions\n• Color grading tips\n• How to export your video\n• Green screen techniques\n• Text animations\n\nWhat would you like to learn?";
-            }
+        function addTypingIndicator() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message ai-message';
+            messageEl.id = 'typing-indicator';
+            messageEl.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+            messagesDiv.appendChild(messageEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
 
-            return response;
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
         }
 
         function addMessage(text, sender) {
             const messagesDiv = document.getElementById('chatMessages');
             const messageEl = document.createElement('div');
             messageEl.className = `message ${sender === 'user' ? 'user-message' : 'ai-message'}`;
-            
-            if (sender === 'ai-loading') {
-                messageEl.innerHTML = '<span class="loading"></span>Processing your question...';
-            } else {
-                messageEl.textContent = text;
-            }
-            
+            messageEl.textContent = text;
             messagesDiv.appendChild(messageEl);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-
-        function removeLoadingMessage() {
-            const messagesDiv = document.getElementById('chatMessages');
-            const loadingMessages = messagesDiv.querySelectorAll('.ai-message');
-            if (loadingMessages.length > 0) {
-                const lastMessage = loadingMessages[loadingMessages.length - 1];
-                if (lastMessage.textContent.includes('Processing')) {
-                    lastMessage.remove();
-                }
-            }
         }
     </script>
 </body>
