@@ -818,4 +818,38 @@
         }
     </script>
 </body>
-</html>
+</html><!-- Add this inside your HTML body -->
+<button id="chat-start">Start Chat</button>
+
+<script>
+  function startChat() {
+    // Replace this with your chat initialization logic
+    alert("Chat started! Connect to your AI backend here.");
+  }
+
+  const chatButton = document.getElementById("chat-start");
+
+  // Handle both desktop clicks and mobile taps
+  chatButton.addEventListener("click", startChat);
+  chatButton.addEventListener("touchstart", function(e) {
+    e.preventDefault(); // Prevents double firing
+    startChat();
+  });
+</script>
+
+<style>
+  /* Make sure the button is visible and tappable */
+  #chat-start {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    font-size: 16px;
+    background: #0078d7; /* Microsoft blue */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    z-index: 9999; /* Keeps it above other elements */
+    cursor: pointer;
+  }
+</style>
