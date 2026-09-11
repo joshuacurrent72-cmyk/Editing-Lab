@@ -1204,3 +1204,47 @@
     input.value = "";
   });
 </script>
+<!-- Chat box (only for mobile) -->
+<div id="chat-box">
+  <input type="text" id="chat-input" placeholder="Ask me…" />
+  <button id="send-btn">Send</button>
+</div>
+
+<style>
+  /* Hide chat box everywhere by default */
+  #chat-box { display: none; }
+
+  /* Show chat box only on screens 768px wide or less (mobile) */
+  @media (max-width: 768px) {
+    #chat-box {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #f1f1f1;
+      padding: 10px;
+      flex-direction: column;
+      z-index: 9999;
+    }
+  }
+</style>
+
+<script>
+  const chatButton = document.getElementById("chat-start");
+  const chatBox = document.getElementById("chat-box");
+  const input = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-btn");
+
+  chatButton.addEventListener("click", () => {
+    if (window.innerWidth <= 768) { // only mobile
+      chatBox.style.display = "flex";
+      input.focus();
+    }
+  });
+
+  sendBtn.addEventListener("click", () => {
+    alert("You typed: " + input.value);
+    input.value = "";
+  });
+</script>
