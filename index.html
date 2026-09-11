@@ -1063,3 +1063,52 @@
     border-radius: 4px;
   }
 </style>
+<!-- Start Chatting button -->
+<button id="chat-start">Start Chatting</button>
+
+<!-- Chat box (hidden at first) -->
+<div id="chat-box" style="display:none;">
+  <div id="chat-messages"></div>
+  <input 
+    type="text" 
+    id="chat-input" 
+    placeholder="Ask me…" 
+    autocomplete="off"
+  />
+  <button id="send-btn">Send</button>
+</div>
+
+<script>
+  const chatButton = document.getElementById("chat-start");
+  const chatBox = document.getElementById("chat-box");
+  const input = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-btn");
+  const messages = document.getElementById("chat-messages");
+
+  // Show chat box when button is pressed
+  chatButton.addEventListener("click", () => {
+    chatBox.style.display = "flex";   // make it visible
+    input.focus();                    // open keyboard on mobile
+  });
+
+  // Send message
+  sendBtn.addEventListener("click", () => {
+    const message = input.value.trim();
+    if (message) {
+      const msgDiv = document.createElement("div");
+      msgDiv.textContent = "You: " + message;
+      messages.appendChild(msgDiv);
+
+      input.value = "";
+
+      const aiDiv = document.createElement("div");
+      aiDiv.textContent = "AI: (response goes here)";
+      messages.appendChild(aiDiv);
+    }
+  });
+</script>
+
+<style>
+  #chat-box {
+    position: fixed;
+    bottom
