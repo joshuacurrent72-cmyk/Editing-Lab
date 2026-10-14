@@ -71,11 +71,15 @@
     .theme-toggle{position:fixed;left:18px;bottom:18px;width:52px;height:52px;border-radius:12px;background:var(--card);display:inline-grid;place-items:center;box-shadow:var(--shadow);cursor:pointer;border:1px solid var(--glass);color:var(--text)}
     .theme-toggle svg{width:20px;height:20px}
 
+    /* Error banner */
+    #errorBanner{position:fixed;left:50%;transform:translateX(-50%);top:12px;background:#ff4757;color:white;padding:8px 14px;border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,0.4);display:none;z-index:9999;max-width:90%;white-space:pre-wrap}
+
     @media(max-width:880px){.hero{grid-template-columns:1fr}.chat-modal{right:10px;left:10px;width:auto;bottom:88px}}
 
   </style>
 </head>
 <body>
+  <div id="errorBanner" role="alert" aria-live="assertive"></div>
   <header>
     <div class="logo">
       <div class="icon">🎬</div>
@@ -98,6 +102,18 @@
             <li>Platform guides: CapCut, Premiere, After Effects, DaVinci, Final Cut</li>
             <li>Dark / Light theme with memory (localStorage)</li>
           </ul>
+        </div>
+        <!-- Fallback static KB: visible even if JS errors out -->
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Quick Answers (Fallback)</h4>
+          <div style="color:var(--muted);font-size:0.95rem;line-height:1.4">
+            <strong>CapCut — Smooth Transition:</strong><br>
+            Select the two clips → tap the white square between clips or open Transitions → choose Smooth/Slide → set duration.<br><br>
+            <strong>Premiere — Cross Dissolve:</strong><br>
+            Effects → Video Transitions → Dissolve → Cross Dissolve → drag to cut → adjust duration.<br><br>
+            <strong>Premiere — Green Screen (Ultra Key):</strong><br>
+            Put green clip above background → Effects → Ultra Key → use eyedropper → refine matte.
+          </div>
         </div>
       </div>
       <aside class="card">
@@ -138,6 +154,39 @@
   <footer style="text-align:center;padding:18px;color:var(--muted);">&copy; 2026 AI-Powered Editing Program</footer>
 
   <script>
+    // Global error handling: show a visible banner and log to console
+    (function(){
+      function showError(msg){
+        try {
+          var banner = document.getElementById('errorBanner');
+          if (banner){ banner.textContent = 'Error: ' + msg; banner.style.display = 'block'; }
+        } catch(e){}
+        console.error('Runtime error:', msg);
+      }
+
+      window.addEventListener('error', function(evt){
+        showError(evt.message + ' (' + evt.filename + ':' + evt.lineno + ')');
+      });
+
+      window.addEventListener('unhandledrejection', function(evt){
+        try {
+          var reason = (evt && evt.reason && evt.reason.message) || (evt && evt.reason) || 'unknown';
+          showError('Unhandled Promise rejection: ' + reason);
+        } catch(e){ showError('Unhandled Promise rejection'); }
+      });
+
+      // small helper to auto-hide banner after first display
+      var hideTimeout = null;
+      var observer = new MutationObserver(function(){
+        var banner = document.getElementById('errorBanner');
+        if (banner && banner.style.display === 'block'){
+          if (hideTimeout) clearTimeout(hideTimeout);
+          hideTimeout = setTimeout(function(){ try{ banner.style.display='none'; }catch(e){} }, 15000);
+        }
+      });
+      try{ observer.observe(document.documentElement, { childList: true, subtree: true }); }catch(e){}
+    })();
+
     (function(){
       document.addEventListener('DOMContentLoaded', ()=>{
         const openChat = document.getElementById('openChat');
@@ -169,7 +218,7 @@
           try {
             localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
           } catch (error) {
-            // fail silently: caching is a performance enhancement, not a core function
+            // fail silently
           }
         }
 
@@ -289,7 +338,7 @@
           } else if (KB[intent] && KB[intent].general) {
             reply = KB[intent].general;
           } else {
-            reply = `I can help with ${intent} in ${platform === 'general' ? 'your editor' : platform.replace('-', ' ')}.\nTry a more specific prompt: "How do I add a cinematic transition in CapCut?"`;
+            reply = `I can help with ${intent} in ${platform === 'general' ? 'your editor' : platform.replace('-', ' ')}.\nTry a more specific prompt: \"How do I add a cinematic transition in CapCut?\"`;
           }
 
           if (platform !== 'general' && intent !== 'general') {
