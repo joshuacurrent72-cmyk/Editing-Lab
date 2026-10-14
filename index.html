@@ -20,7 +20,6 @@
       --shadow: 0 8px 30px rgba(2,6,23,0.6);
     }
 
-    /* Light theme overrides */
     .theme-light{
       --bg: #f5f7fb;
       --card: #ffffff;
@@ -34,31 +33,29 @@
       --shadow: 0 8px 30px rgba(15,23,42,0.06);
     }
 
-    /* Base layout */
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:radial-gradient(1200px 600px at 10% 10%, rgba(124,142,246,0.08), transparent),var(--bg);-webkit-font-smoothing:antialiased}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:radial-gradient(1200px 600px at 10% 10%, rgba(124,142,246,0.2), transparent), var(--bg)}
+    body{display:flex;flex-direction:column}
 
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);backdrop-filter: blur(6px);box-shadow:var(--shadow)}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);backdrop-filter: blur(6px)}
     .logo{font-weight:700;display:flex;align-items:center;gap:10px}
+    .logo .icon{font-size:1.3rem}
     .logo .title{font-size:1.05rem}
 
-    /* Chat button */
     .open-chat{
-      appearance:none;border:0;padding:10px 14px;border-radius:999px;background:linear-gradient(90deg,var(--accent),#6246ea);color:white;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(99,81,255,0.18)
+      appearance:none;border:0;padding:10px 14px;border-radius:999px;background:linear-gradient(90deg,var(--accent),#6246ea);color:white;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(92,92,255,0.25)
     }
 
-    main{max-width:1100px;margin:32px auto;padding:0 20px}
+    main{max-width:1100px;margin:32px auto;padding:0 20px;flex:1}
     .hero{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start}
     .card{background:var(--card);border-radius:12px;padding:20px;box-shadow:var(--shadow)}
     .hero-left h1{font-size:2rem;margin:0 0 12px;color:var(--text)}
     .hero-left p{color:var(--muted);margin:0 0 18px}
 
-    /* Platforms grid */
     .platform-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
     .platform{padding:14px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6f56f9);color:white;text-align:center;font-weight:600}
 
-    /* Chat modal (improved) */
-    .chat-modal{position:fixed;right:20px;bottom:96px;width:380px;max-width:calc(100% - 40px);height:520px;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transform:translateY(12px);opacity:0;pointer-events:none;transition:all .28s cubic-bezier(.2,.9,.2,1)}
+    .chat-modal{position:fixed;right:20px;bottom:96px;width:380px;max-width:calc(100% - 40px);height:520px;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transform:translateY(14px);opacity:0;pointer-events:none;transition:all .2s ease;background:var(--card);box-shadow:var(--shadow)}
     .chat-modal.open{transform:none;opacity:1;pointer-events:auto}
     .chat-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(90deg, rgba(0,0,0,0.35), rgba(255,255,255,0.02));}
     .chat-header h3{margin:0;font-size:1rem}
@@ -67,16 +64,13 @@
     .chat-input{flex:1;padding:10px 12px;border-radius:999px;border:1px solid var(--glass);background:transparent;color:var(--text);outline:none}
     .send-btn{width:44px;height:44px;border-radius:50%;border:0;background:var(--accent);color:white;cursor:pointer}
 
-    /* Messages */
-    .msg{max-width:82%;padding:10px 12px;border-radius:12px;white-space:pre-wrap;font-size:0.95rem}
+    .msg{max-width:82%;padding:10px 12px;border-radius:12px;white-space:pre-wrap;font-size:0.95rem;line-height:1.5}
     .msg.ai{background:var(--chat-bubble-ai);color:var(--text);align-self:flex-start;border-left:4px solid rgba(124,142,246,0.18)}
     .msg.user{background:var(--chat-bubble-user);color:white;align-self:flex-end}
 
-    /* Theme toggle */
-    .theme-toggle{position:fixed;left:18px;bottom:18px;width:52px;height:52px;border-radius:12px;background:var(--card);display:inline-grid;place-items:center;box-shadow:var(--shadow);cursor:pointer;border:1px solid var(--glass)}
+    .theme-toggle{position:fixed;left:18px;bottom:18px;width:52px;height:52px;border-radius:12px;background:var(--card);display:inline-grid;place-items:center;box-shadow:var(--shadow);cursor:pointer;border:1px solid var(--glass);color:var(--text)}
     .theme-toggle svg{width:20px;height:20px}
 
-    /* Responsive */
     @media(max-width:880px){.hero{grid-template-columns:1fr}.chat-modal{right:10px;left:10px;width:auto;bottom:88px}}
 
   </style>
@@ -100,7 +94,7 @@
         <div class="card">
           <h4 style="margin:0 0 8px">Features</h4>
           <ul style="margin:0;padding-left:18px;color:var(--muted)">
-            <li>Interactive chat assistant (client-side knowledge base)</li>
+            <li>Fast chat assistant with cached answers</li>
             <li>Platform guides: CapCut, Premiere, After Effects, DaVinci, Final Cut</li>
             <li>Dark / Light theme with memory (localStorage)</li>
           </ul>
@@ -121,7 +115,6 @@
     </div>
   </main>
 
-  <!-- Chat modal (single) -->
   <div class="chat-modal" id="chatModal" role="dialog" aria-label="AI Assistant">
     <div class="chat-header">
       <h3>🤖 AI Assistant</h3>
@@ -130,7 +123,7 @@
       </div>
     </div>
     <div class="chat-body" id="chatBody">
-      <div class="msg ai">Welcome to AI Editing Assistant!\nI can help with transitions, color grading, green screen, text animations and exports across popular editors. Try: "Add a smooth transition in CapCut"</div>
+      <div class="msg ai">Welcome to AI Editing Assistant! I can help with transitions, color grading, green screen, text animations, audio sync, and exports across popular editors. Try: "Add a smooth transition in CapCut"</div>
     </div>
     <div class="chat-input-wrap">
       <input id="chatInput" class="chat-input" placeholder="Ask me... e.g. 'Key a green screen in Premiere'" aria-label="Chat input">
@@ -138,16 +131,14 @@
     </div>
   </div>
 
-  <!-- Theme toggle bottom-left -->
   <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle dark / light theme">
-    <svg id="themeIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 19v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.2 4.2l1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.4 18.4l1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.2 19.8l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.4 5.6l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle id="sunCore" cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+    <svg id="themeIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 19v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.93 4.93l1.41 1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.66 17.66l1.41 1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.93 19.07l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
   </button>
 
   <footer style="text-align:center;padding:18px;color:var(--muted);">&copy; 2026 AI-Powered Editing Program</footer>
 
   <script>
     (function(){
-      // DOM ready
       document.addEventListener('DOMContentLoaded', ()=>{
         const openChat = document.getElementById('openChat');
         const chatModal = document.getElementById('chatModal');
@@ -155,49 +146,159 @@
         const sendBtn = document.getElementById('sendBtn');
         const chatInput = document.getElementById('chatInput');
         const chatBody = document.getElementById('chatBody');
-
-        // Theme elements
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
 
-        // Ensure a single source of truth for open/close
-        function openChatModal(){
-          chatModal.classList.add('open');
-          setTimeout(()=>chatInput.focus(),120);
-        }
-        function closeChatModal(){
-          chatModal.classList.remove('open');
-          openChat.focus();
+        const CACHE_KEY = 'ai-editing-cache-v1';
+        const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
+
+        function normalizeText(value){
+          return (value || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
         }
 
-        // Attach listeners (guarded)
-        if(openChat) openChat.addEventListener('click', openChatModal);
-        if(chatClose) chatClose.addEventListener('click', closeChatModal);
-
-        // Close when clicking outside the modal (on small screens we allow easy dismiss)
-        document.addEventListener('click', (e)=>{
-          if(!chatModal.classList.contains('open')) return;
-          if(e.target === openChat) return;
-          // if click is outside modal and not inside
-          if(!chatModal.contains(e.target) && !openChat.contains(e.target)){
-            closeChatModal();
+        function loadCache(){
+          try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            return raw ? JSON.parse(raw) : {};
+          } catch (error) {
+            return {};
           }
-        });
+        }
 
-        // Escape key closes
-        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeChatModal(); });
+        function saveCache(cache){
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+          } catch (error) {
+            // fail silently: caching is a performance enhancement, not a core function
+          }
+        }
 
-        // Simple client-side knowledge base (kept small and robust)
+        function getCachedReply(input){
+          const cache = loadCache();
+          const key = normalizeText(input);
+          const entry = cache[key];
+          if (!entry) return null;
+          if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+            delete cache[key];
+            saveCache(cache);
+            return null;
+          }
+          return entry.text;
+        }
+
+        function storeReply(input, reply){
+          const cache = loadCache();
+          const key = normalizeText(input);
+          cache[key] = { text: reply, timestamp: Date.now() };
+          saveCache(cache);
+        }
+
+        function detectPlatform(input){
+          if (/after effects|ae/.test(input)) return 'after-effects';
+          if (/capcut|cap cut/.test(input)) return 'capcut';
+          if (/davinci|resolve/.test(input)) return 'davinci';
+          if (/premiere|adobe premiere/.test(input)) return 'premiere';
+          if (/final cut|fcpx/.test(input)) return 'final-cut';
+          if (/sony vegas|vegas/.test(input)) return 'vegas';
+          if (/photoshop/.test(input)) return 'photoshop';
+          if (/audition/.test(input)) return 'audition';
+          if (/obs/.test(input)) return 'obs';
+          return 'general';
+        }
+
+        function detectIntent(input){
+          const scores = {
+            transition: ['transition','cut','dissolve','wipe','slide','fade','match cut'],
+            color: ['color grade','lut','grading','color correction','cinematic','look'],
+            greenscreen: ['green screen','greenscreen','keying','chroma key','ultra key','key out'],
+            text: ['text','titles','lower third','animated title','font','caption'],
+            audio: ['audio','sound','mix','music','voiceover','sync audio','ducking'],
+            export: ['export','render','codec','h264','mp4','share','delivery']
+          };
+
+          let best = 'general';
+          let highestScore = 0;
+
+          Object.entries(scores).forEach(([intent, keywords]) => {
+            const score = keywords.reduce((total, keyword) => total + (input.includes(keyword) ? 1 : 0), 0);
+            if (score > highestScore) {
+              highestScore = score;
+              best = intent;
+            }
+          });
+
+          return highestScore === 0 ? 'general' : best;
+        }
+
         const KB = {
-          transitions: {
-            capcut: 'CapCut — Smooth Transition:\n1. Select clips on the timeline.\n2. Tap the white square between clips or select Transition.\n3. Pick Smooth / Slide and set duration.',
-            premiere: 'Premiere — Cross Dissolve:\n1. Effects > Video Transitions > Dissolve > Cross Dissolve.\n2. Drag onto cut and trim duration.'
+          general: {
+            answer: 'Tell me your platform and exact goal. Try: "Add a smooth transition in CapCut" or "How do I color grade in DaVinci Resolve?"'
+          },
+          transition: {
+            capcut: 'CapCut — Smooth Transition:\n1. Select the two clips on the timeline.\n2. Tap the transition area between them or open the Transition tab.\n3. Choose Smooth, Slide, or Zoom and set duration to 0.5–1.5s.\n4. Preview and adjust speed or easing.',
+            premiere: 'Premiere Pro — Cross Dissolve:\n1. Go to Effects > Video Transitions > Dissolve > Cross Dissolve.\n2. Drag it between clips on the timeline.\n3. Adjust duration using trim handles.\n4. For a smoother look, add a slight speed ramp or soft cut.',
+            after-effects: 'After Effects — Quick Transition:\n1. Place the two clips in the comp timeline.\n2. Add a cross-dissolve or mask-based transition.\n3. Use a 2–5 frame dissolve or blur/scale animation.\n4. Preview at full quality and export with a clean render.',
+            davinci: 'DaVinci Resolve — Transition Setup:\n1. Open the Edit page and select the cut between clips.\n2. Use the transition library and choose Dissolve or Speed Warp.\n3. Adjust duration and soften the transition with blur or zoom.\n4. Check in the Color page if the cut needs tonal continuity.',
+            final-cut: 'Final Cut Pro — Quick Transition:\n1. Select the cut between two clips.\n2. Open the Transition browser and add Dissolve or Slide.\n3. Set duration using the trim tool.\n4. Fine-tune with keyframes for timing and motion.',
+            vegas: 'Sony Vegas — Fast Transition:\n1. Drag a transition from the Transitions tab to the cut point.\n2. Use Crossfade, Slide, or Page Peel depending on style.\n3. Adjust duration and apply event pan/crop if needed.\n4. Preview on full resolution before export.'
+          },
+          color: {
+            capcut: 'CapCut — Cinematic Color Grade:\n1. Open the video and go to Adjust.\n2. Increase contrast slightly and reduce highlights.\n3. Add a LUT or warm/cool balance to match your theme.\n4. Use skin tone / saturation controls sparingly.',
+            premiere: 'Premiere Pro — Basic Color Grade:\n1. Open Color workspace.\n2. Use Basic Correction: white balance, exposure, contrast.\n3. Use Curves or Lumetri Color to create a cinematic look.\n4. Use a consistent LUT if you want uniform style.',
+            davinci: 'DaVinci Resolve — Color Grade:\n1. Use the Color page and Balance color first.\n2. Correct white balance and exposure.\n3. Add contrast, selective saturation, and a LUT.\n4. Keep skin tones natural and avoid over-grading.',
+            after-effects: 'After Effects — Stylized Look:\n1. Apply a color correction adjustment layer.\n2. Use Curves and Hue/Saturation for color balance.\n3. Add glow, vignette, or grain for filmic texture.\n4. Precomp and match shots for consistency.',
+            final-cut: 'Final Cut Pro — Color Correction:\n1. Open the Color board and adjust exposure and contrast.\n2. Use the color balance controls for skin warmth.\n3. Add a LUT or custom look.\n4. Keep your grade consistent on every shot.'
           },
           greenscreen: {
-            premiere: 'Premiere — Ultra Key:\n1. Put green clip above background.\n2. Effects > Ultra Key, pick color with eyedropper.\n3. Refine Matte.'
+            premiere: 'Premiere Pro — Green Screen Key:\n1. Put the green screen clip above background.\n2. Use Effects > Ultra Key.\n3. Click the eyedropper on the green screen.\n4. Refine Matte > Decrease Choke/Spill and clean edges.\n5. Add a slight shadow for realism.',
+            davinci: 'DaVinci Resolve — Keying:\n1. Use the Color page and select the green screen.\n2. Choose Qualifier and isolate the green.\n3. Adjust Key, Gain, and Spill Suppression.\n4. Refine the edge and add a subtle shadow.',
+            capcut: 'CapCut — Green Screen:\n1. Place the green screen clip above the background.\n2. Open Chroma Key and use the eyedropper on the green.\n3. Adjust intensity and smooth edges.\n4. Add a soft shadow and fine-tune until the cut looks natural.',
+            after-effects: 'After Effects — Keying:\n1. Use Keylight on the green screen footage.\n2. Select the green with the eyedropper.\n3. Adjust Screen Gain, Screen Balance, and Clip Black.\n4. Add a slight blur and shadow to make it realistic.'
           },
-          general: 'Tell me what you want to do and which platform. Example: "Add a smooth transition in CapCut"'
+          text: {
+            capcut: 'CapCut — Text Animation:\n1. Add a text layer over the clip.\n2. Use animation presets and keyframe start/end positions.\n3. Add a motion blur or scale effect.\n4. Match text timing to the beat or action.',
+            premiere: 'Premiere Pro — Titles:\n1. Open Graphics workspace and add a title.\n2. Choose a modern font and position it.\n3. Use keyframes to animate scale and opacity.\n4. Add a simple motion blur or easing for smooth movement.',
+            davinci: 'DaVinci Resolve — Titles:\n1. Use Titles and pick a minimalist style.\n2. Animate in and out with keyframes.\n3. Adjust letter spacing and contrast.\n4. Add a subtle shadow and match the clip style.'
+          },
+          audio: {
+            general: 'Audio Fixes:\n1. Clean background noise first.\n2. Use EQ to reduce muddiness.\n3. Normalize volume for consistent levels.\n4. Add gentle compression to keep the voice smooth and even.',
+            premiere: 'Premiere Pro — Audio Cleanup:\n1. Use Essential Sound > Dialogue.\n2. Reduce noise and set EQ.\n3. Add compression for consistency.\n4. Use ducking for music under voiceovers.'
+          },
+          export: {
+            general: 'Export Checklist:\n1. Choose the correct codec (H.264 for web, ProRes for editing).\n2. Use a matching frame rate and resolution.\n3. Set bitrate high enough for quality.\n4. Review a test export before final delivery.',
+            premiere: 'Premiere Pro — Export:\n1. File > Export > Media.\n2. Choose H.264 for social and ProRes for master quality.\n3. Use 1080p/4K based on project needs.\n4. Export a short test clip first.'
+          }
         };
+
+        function botReply(input){
+          const cleanInput = normalizeText(input);
+          if (!cleanInput) return KB.general.answer;
+
+          const cached = getCachedReply(cleanInput);
+          if (cached) return cached;
+
+          const platform = detectPlatform(cleanInput);
+          const intent = detectIntent(cleanInput);
+
+          let reply;
+
+          if (intent === 'general' || platform === 'general') {
+            reply = KB.general.answer;
+          } else if (KB[intent] && KB[intent][platform]) {
+            reply = KB[intent][platform];
+          } else if (KB[intent] && KB[intent].general) {
+            reply = KB[intent].general;
+          } else {
+            reply = `I can help with ${intent} in ${platform === 'general' ? 'your editor' : platform.replace('-', ' ')}.\nTry a more specific prompt: "How do I add a cinematic transition in CapCut?"`;
+          }
+
+          if (platform !== 'general' && intent !== 'general') {
+            reply += `\n\nQuick tip: start by identifying the clip you want to change, then make one adjustment at a time so you can judge the result quickly.`;
+          }
+
+          storeReply(cleanInput, reply);
+          return reply;
+        }
 
         function addMessage(text, who){
           const el = document.createElement('div');
@@ -207,19 +308,28 @@
           chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        function botReply(input){
-          const m = input.toLowerCase();
-          if(m.includes('transition')){
-            if(m.includes('capcut')) return KB.transitions.capcut;
-            if(m.includes('premiere')) return KB.transitions.premiere;
-            return 'Which platform? (CapCut, Premiere, After Effects, DaVinci, Final Cut)';
-          }
-          if(m.includes('green') || m.includes('chroma') || m.includes('key')){
-            if(m.includes('premiere')) return KB.greenscreen.premiere;
-            return 'Which platform? (Premiere, DaVinci, CapCut)';
-          }
-          return KB.general;
+        function openChatModal(){
+          chatModal.classList.add('open');
+          setTimeout(()=>chatInput.focus(),120);
         }
+
+        function closeChatModal(){
+          chatModal.classList.remove('open');
+          if (openChat) openChat.focus();
+        }
+
+        if(openChat) openChat.addEventListener('click', openChatModal);
+        if(chatClose) chatClose.addEventListener('click', closeChatModal);
+
+        document.addEventListener('click', (e)=>{
+          if(!chatModal.classList.contains('open')) return;
+          if(e.target === openChat) return;
+          if(!chatModal.contains(e.target) && !openChat.contains(e.target)){
+            closeChatModal();
+          }
+        });
+
+        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeChatModal(); });
 
         function sendMessage(){
           const text = chatInput.value.trim();
@@ -228,11 +338,10 @@
           chatInput.value = '';
           sendBtn.disabled = true;
 
-          // typing
           const typing = document.createElement('div');
           typing.className = 'msg ai';
           typing.id = 'typing';
-          typing.innerHTML = '...';
+          typing.textContent = '...';
           chatBody.appendChild(typing);
           chatBody.scrollTop = chatBody.scrollHeight;
 
@@ -242,13 +351,12 @@
             addMessage(resp, 'ai');
             sendBtn.disabled = false;
             chatInput.focus();
-          }, 450);
+          }, 140);
         }
 
         if(sendBtn) sendBtn.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e)=>{ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
 
-        // THEME: remember preference in localStorage, default to system
         const root = document.documentElement;
         function setTheme(theme){
           if(theme === 'light') root.classList.add('theme-light');
@@ -256,16 +364,15 @@
           localStorage.setItem('site-theme', theme);
           updateThemeIcon(theme);
         }
+
         function updateThemeIcon(theme){
-          // simple sun/moon swap via rotation and fill
           if(theme === 'light'){
             themeIcon.innerHTML = '<path d="M21 12a9 9 0 1 1-9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>';
           } else {
-            themeIcon.innerHTML = '<path d="M12 3v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 19v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>';
+            themeIcon.innerHTML = '<path d="M12 3v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 19v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.93 4.93l1.41 1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.66 17.66l1.41 1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.93 19.07l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.66 6.34l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/>';
           }
         }
 
-        // initialize theme
         const stored = localStorage.getItem('site-theme');
         if(stored) setTheme(stored);
         else{
@@ -278,7 +385,7 @@
           setTheme(current === 'light' ? 'dark' : 'light');
         });
 
-      }); // domContentLoaded
+      });
     })();
   </script>
 </body>
