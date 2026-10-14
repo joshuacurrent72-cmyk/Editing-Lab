@@ -5,1246 +5,223 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>AI-Powered Editing Program</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html, body {
-            width: 100%;
-            overflow-x: hidden;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        header {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        header .logo {
-            font-size: 1.4em;
-            font-weight: bold;
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        @media (max-width: 480px) {
-            header .logo {
-                font-size: 1.1em;
-            }
-        }
-        
-        .ai-chat-button {
-            background: #000;
-            color: white;
-            padding: 10px 20px;
-            border: 2px solid #667eea;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 0.95em;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            white-space: nowrap;
-        }
-        
-        @media (max-width: 480px) {
-            .ai-chat-button {
-                padding: 8px 15px;
-                font-size: 0.85em;
-            }
-        }
-        
-        .ai-chat-button:hover {
-            background: #1a1a1a;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
-            transform: scale(1.05);
-        }
-        
-        .ai-chat-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            max-width: 450px;
-            height: 100vh;
-            background: white;
-            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-            flex-direction: column;
-        }
-        
-        @media (max-width: 768px) {
-            .ai-chat-modal {
-                max-width: 100%;
-            }
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-            }
-            to {
-                transform: translateX(0);
-            }
-        }
-        
-        .ai-chat-modal.active {
-            display: flex;
-        }
-        
-        .ai-chat-header {
-            background: #000;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #667eea;
-            flex-shrink: 0;
-        }
-        
-        .ai-chat-header h2 {
-            font-size: 1.1em;
-        }
-        
-        @media (max-width: 480px) {
-            .ai-chat-header h2 {
-                font-size: 1em;
-            }
-        }
-        
-        .close-chat {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5em;
-            cursor: pointer;
-            transition: 0.3s;
-            padding: 5px;
-        }
-        
-        .close-chat:hover {
-            color: #667eea;
-        }
-        
-        .ai-chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: #f9f9f9;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .message {
-            padding: 10px 12px;
-            border-radius: 8px;
-            animation: fadeIn 0.3s ease-in;
-            word-wrap: break-word;
-            max-width: 90%;
-            font-size: 0.95em;
-        }
-        
-        @media (max-width: 480px) {
-            .message {
-                font-size: 0.9em;
-                padding: 8px 10px;
-            }
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .user-message {
-            background: #667eea;
-            color: white;
-            align-self: flex-end;
-            border-radius: 15px 15px 0 15px;
-        }
-        
-        .ai-message {
-            background: #e9e9e9;
-            color: #333;
-            align-self: flex-start;
-            border-radius: 15px 15px 15px 0;
-            border-left: 3px solid #667eea;
-            white-space: pre-wrap;
-            line-height: 1.4;
-        }
-        
-        .ai-message strong {
-            color: #667eea;
-        }
-        
-        .ai-chat-input-area {
-            padding: 12px;
-            background: white;
-            border-top: 1px solid #ddd;
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        
-        @media (max-width: 480px) {
-            .ai-chat-input-area {
-                padding: 10px;
-                gap: 6px;
-            }
-        }
-        
-        .ai-chat-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 0.95em;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        
-        @media (max-width: 480px) {
-            .ai-chat-input {
-                font-size: 0.9em;
-                padding: 8px 10px;
-            }
-        }
-        
-        .ai-chat-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
-        }
-        
-        .send-button {
-            background: #000;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            flex-shrink: 0;
-        }
-        
-        @media (max-width: 480px) {
-            .send-button {
-                width: 36px;
-                height: 36px;
-                font-size: 1em;
-            }
-        }
-        
-        .send-button:hover {
-            background: #1a1a1a;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .send-button:disabled {
-            background: #666;
-            cursor: not-allowed;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 15px;
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                margin: 20px auto;
-                padding: 0 12px;
-            }
-        }
-        
-        .section {
-            background: white;
-            padding: 25px;
-            margin: 20px 0;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        @media (max-width: 480px) {
-            .section {
-                padding: 18px;
-                margin: 15px 0;
-                border-radius: 8px;
-            }
-        }
-        
-        .section h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.6em;
-        }
-        
-        @media (max-width: 480px) {
-            .section h2 {
-                font-size: 1.3em;
-                margin-bottom: 12px;
-            }
-        }
-        
-        .platform-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin: 15px 0;
-        }
-        
-        @media (max-width: 480px) {
-            .platform-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-        }
-        
-        .platform-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        
-        @media (max-width: 480px) {
-            .platform-card {
-                padding: 12px;
-            }
-        }
-        
-        .platform-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .platform-card h3 {
-            margin: 8px 0;
-            font-size: 0.95em;
-        }
-        
-        .platform-card p {
-            font-size: 0.85em;
-        }
-        
-        @media (max-width: 480px) {
-            .platform-card h3 {
-                font-size: 0.9em;
-            }
-            
-            .platform-card p {
-                font-size: 0.8em;
-            }
-        }
-        
-        .cta-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 25px;
-            font-size: 1em;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            display: inline-block;
-            text-decoration: none;
-            margin: 8px;
-        }
-        
-        @media (max-width: 480px) {
-            .cta-button {
-                padding: 10px 20px;
-                font-size: 0.9em;
-                margin: 6px;
-            }
-        }
-        
-        .cta-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 15px 0;
-        }
-        
-        @media (max-width: 480px) {
-            .features {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-        }
-        
-        .feature {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid #667eea;
-        }
-        
-        @media (max-width: 480px) {
-            .feature {
-                padding: 12px;
-            }
-        }
-        
-        .feature h3 {
-            color: #667eea;
-            margin: 8px 0;
-            font-size: 0.95em;
-        }
-        
-        .feature p {
-            font-size: 0.9em;
-        }
-        
-        @media (max-width: 480px) {
-            .feature h3 {
-                font-size: 0.9em;
-            }
-            
-            .feature p {
-                font-size: 0.85em;
-            }
-        }
-        
-        footer {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: 30px;
-            font-size: 0.95em;
-        }
-        
-        @media (max-width: 480px) {
-            footer {
-                padding: 15px;
-                font-size: 0.85em;
-            }
-        }
-        
-        .ai-chat-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        @media (max-width: 480px) {
-            .ai-chat-section {
-                padding: 20px 15px;
-            }
-        }
-        
-        .ai-chat-section h2 {
-            color: white;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        
-        @media (max-width: 480px) {
-            .ai-chat-section h2 {
-                font-size: 1.3em;
-                margin-bottom: 10px;
-            }
-        }
-        
-        .ai-chat-section p {
-            font-size: 1em;
-            margin: 12px 0;
-        }
-        
-        @media (max-width: 480px) {
-            .ai-chat-section p {
-                font-size: 0.9em;
-            }
-        }
-        
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            margin: 10px 0;
-        }
-        
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            background: #667eea;
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-        
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        
-        @keyframes typing {
-            0%, 60%, 100% {
-                opacity: 0.5;
-                transform: translateY(0);
-            }
-            30% {
-                opacity: 1;
-                transform: translateY(-8px);
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                font-size: 14px;
-            }
-            
-            ol {
-                padding-left: 20px;
-            }
-            
-            ol li {
-                margin: 8px 0;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        header { background: rgba(0,0,0,0.8); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .logo { font-size: 1.25em; font-weight: 700; }
+        .ai-chat-button { background: #000; color: #fff; padding: 10px 18px; border-radius: 50px; border: 2px solid #667eea; cursor: pointer; font-weight: 700; }
+        .ai-chat-modal { display: none; position: fixed; right: 20px; bottom: 80px; width: 360px; max-width: calc(100% - 40px); height: 520px; max-height: 80vh; background: #fff; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.35); z-index: 2000; overflow: hidden; display: flex; flex-direction: column; }
+        .ai-chat-modal.active { display: flex; }
+        .ai-chat-header { background: #000; color: #fff; padding: 10px 12px; display:flex; justify-content: space-between; align-items:center; }
+        .ai-chat-header h2 { font-size: 1em; margin: 0; }
+        .close-chat { background: transparent; border: none; color: #fff; font-size: 1.2em; cursor: pointer; }
+        .ai-chat-messages { flex: 1; padding: 12px; overflow-y: auto; background: #f7f7fb; display:flex; flex-direction:column; gap:10px; }
+        .message { max-width: 90%; padding: 10px 12px; border-radius: 10px; font-size: 0.95em; white-space: pre-wrap; }
+        .user-message { background: #667eea; color: #fff; align-self: flex-end; border-radius: 14px 14px 6px 14px; }
+        .ai-message { background: #eef0f6; color: #111; align-self: flex-start; border-radius: 14px 14px 14px 6px; border-left: 3px solid #667eea; }
+        .ai-chat-input-area { display:flex; gap:8px; padding: 10px; border-top:1px solid #e6e6e6; }
+        .ai-chat-input { flex:1; padding:10px 12px; border-radius: 22px; border:1px solid #ddd; outline:none; }
+        .send-button { width:44px; height:44px; border-radius:50%; border:none; background:#000; color:#fff; cursor:pointer; }
+        .typing-indicator { display:flex; gap:6px; align-items:center; }
+        .typing-dot { width:7px; height:7px; background:#667eea; border-radius:50%; opacity:0.5; animation:typing 1.4s infinite; }
+        .typing-dot:nth-child(2){ animation-delay:0.15s;} .typing-dot:nth-child(3){ animation-delay:0.3s; }
+        @keyframes typing { 0%,60%,100% { transform:translateY(0); opacity:0.5; } 30% { transform:translateY(-6px); opacity:1; } }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; }
+        .section { background: #fff; padding: 20px; margin: 20px 0; border-radius:10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .platform-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:12px; }
+        .platform-card{ padding:12px; border-radius:8px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; text-align:center }
+        footer{ background:rgba(0,0,0,0.8); color:#fff; text-align:center; padding:18px; margin-top:24px; }
+        @media(max-width:480px){ .ai-chat-modal{ right:10px; left:10px; bottom:60px; width:auto; } }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">🎬 AI Editing</div>
-        <button class="ai-chat-button" onclick="openAIChat()">💬 AI</button>
+        <button class="ai-chat-button" id="openChatBtn" aria-haspopup="dialog" aria-controls="aiChatModal">💬 Chat</button>
     </header>
-    
-    <!-- AI Chat Modal -->
-    <div class="ai-chat-modal" id="aiChatModal">
+
+    <!-- AI Chat Modal (single, cleaned) -->
+    <div class="ai-chat-modal" id="aiChatModal" role="dialog" aria-label="AI Assistant Chat">
         <div class="ai-chat-header">
             <h2>🤖 AI Assistant</h2>
-            <button class="close-chat" onclick="closeAIChat()">✕</button>
+            <button class="close-chat" id="closeChatBtn" aria-label="Close chat">✕</button>
         </div>
         <div class="ai-chat-messages" id="chatMessages">
-            <div class="ai-message">
-                <strong>Welcome to AI Editing Assistant!</strong><br><br>
-                I'm powered by advanced AI to help you with video editing across all platforms:<br>
-                • After Effects<br>
-                • CapCut<br>
-                • DaVinci Resolve<br>
-                • Premiere Pro<br>
-                • Final Cut Pro<br>
-                • Sony Vegas<br><br>
-                Ask me anything and get instant, accurate step-by-step guidance! 🎬
+            <div class="ai-message message">
+                <strong>Welcome to AI Editing Assistant!</strong>\n\nI can help with transitions, color grading, green screen, text animations and exports across popular editors (CapCut, Premiere, After Effects, DaVinci, Final Cut). Ask me a question — for example: "How do I add a smooth transition in CapCut?"
             </div>
         </div>
         <div class="ai-chat-input-area">
-            <input 
-                type="text" 
-                class="ai-chat-input" 
-                id="chatInput" 
-                placeholder="Ask me..." 
-                onkeypress="handleEnter(event)"
-            >
-            <button class="send-button" id="sendBtn" onclick="sendMessage()">📤</button>
+            <input type="text" id="chatInput" class="ai-chat-input" placeholder="Ask me... e.g. 'How to key a green screen in Premiere?'" aria-label="Chat input" />
+            <button id="sendBtn" class="send-button" aria-label="Send">📤</button>
         </div>
     </div>
-    
-    <div class="container">
-        <div class="ai-chat-section">
+
+    <main class="container">
+        <section class="ai-chat-section section">
             <h2>🤖 Chat with AI</h2>
             <p>Describe the edit you want. Get instant step-by-step guidance.</p>
-            <button class="cta-button" onclick="openAIChat()">Start Chatting →</button>
-        </div>
-        
-        <div class="section">
+            <button class="ai-chat-button" onclick="openAIChat()">Start Chatting →</button>
+        </section>
+
+        <section class="section">
             <h2>🛠️ Platforms</h2>
             <div class="platform-grid">
-                <div class="platform-card">
-                    <h3>After Effects</h3>
-                    <p>Motion Graphics</p>
-                </div>
-                <div class="platform-card">
-                    <h3>CapCut</h3>
-                    <p>Mobile Editing</p>
-                </div>
-                <div class="platform-card">
-                    <h3>DaVinci</h3>
-                    <p>Color Grading</p>
-                </div>
-                <div class="platform-card">
-                    <h3>Premiere Pro</h3>
-                    <p>Professional</p>
-                </div>
-                <div class="platform-card">
-                    <h3>Final Cut Pro</h3>
-                    <p>Mac Pro</p>
-                </div>
-                <div class="platform-card">
-                    <h3>Sony Vegas</h3>
-                    <p>Fast & Easy</p>
-                </div>
+                <div class="platform-card"><h3>After Effects</h3><p>Motion Graphics</p></div>
+                <div class="platform-card"><h3>CapCut</h3><p>Mobile Editing</p></div>
+                <div class="platform-card"><h3>DaVinci</h3><p>Color Grading</p></div>
+                <div class="platform-card"><h3>Premiere Pro</h3><p>Professional</p></div>
+                <div class="platform-card"><h3>Final Cut Pro</h3><p>Mac Pro</p></div>
+                <div class="platform-card"><h3>Sony Vegas</h3><p>Fast & Easy</p></div>
             </div>
-        </div>
-        
-        <div class="section">
+        </section>
+
+        <section class="section">
             <h2>✨ Features</h2>
-            <div class="features">
-                <div class="feature">
-                    <h3>🤖 AI Chatbot</h3>
-                    <p>Instant accurate responses</p>
-                </div>
-                <div class="feature">
-                    <h3>📱 Multi-Platform</h3>
-                    <p>10+ editing tools</p>
-                </div>
-                <div class="feature">
-                    <h3>⚡ Lightning Fast</h3>
-                    <p>Get answers instantly</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section">
+            <ul>
+                <li>🤖 AI Chatbot — Instant responses using the built-in knowledge base</li>
+                <li>📱 Multi-Platform — Guides for CapCut, Premiere, After Effects, DaVinci, Final Cut</li>
+                <li>⚡ Fast — Lightweight, client-only chatbot (no external backend required)</li>
+            </ul>
+        </section>
+
+        <section class="section">
             <h2>🚀 How It Works</h2>
-            <ol style="font-size: 0.95em; line-height: 1.8;">
-                <li><strong>YOU</strong> → Describe what edit you want</li>
-                <li><strong>AI</strong> → Provides accurate guidance</li>
-                <li><strong>LEARN</strong> → Follow step-by-step instructions</li>
-                <li><strong>CREATE</strong> → Make amazing edits!</li>
+            <ol>
+                <li>Describe the edit you want</li>
+                <li>The assistant suggests platform-specific, step-by-step instructions</li>
+                <li>Follow the steps and create your edit</li>
             </ol>
-        </div>
-        
-        <div class="section" style="text-align: center;">
-            <h2>Ready?</h2>
-            <p>Join thousands learning to edit with AI</p>
-            <button class="cta-button" onclick="openAIChat()">Launch AI Chat</button>
-            <a href="https://github.com/joshuacurrent72-cmyk/editing-program-" class="cta-button">GitHub</a>
-        </div>
-    </div>
-    
+        </section>
+    </main>
+
     <footer>
-        <p>&copy; 2024 AI-Powered Editing Program.</p>
-        <p>Learn. Create. Share. 🎬</p>
+        <p>&copy; 2026 AI-Powered Editing Program. Learn. Create. Share. 🎬</p>
     </footer>
-    
+
     <script>
-        // Comprehensive Editing Knowledge Base
+        // Lightweight client-side editing knowledge base and chat UI
         const editingKnowledge = {
             transitions: {
-                capcut: `In CapCut (Mobile & Desktop):\n\nSTEP-BY-STEP:\n1. Open your project in CapCut\n2. Select the first clip you want to add a transition to\n3. Tap "Transition" at the bottom\n4. Browse and select transition type (Fade, Slide, Zoom)\n5. Adjust duration (0.3-0.5s recommended)\n6. Preview and apply\n7. Export your video\n\nBEST PRACTICES:\n• Use Cross Fade for smooth cuts\n• Keep transitions under 0.5 seconds\n• Avoid overusing the same transition`,
-
-                premiere: `In Adobe Premiere Pro:\n\nSTEP-BY-STEP:\n1. Arrange clips on the timeline\n2. Click "Effects" panel (Shift+7)\n3. Search "Video Transitions"\n4. Drag transition between clips\n5. Double-click to adjust duration\n6. Set to 0.3-1.0 seconds\n7. Preview with spacebar\n8. Export\n\nPOPULAR TRANSITIONS:\n• Cross Dissolve (smooth)\n• Dip to Black (dramatic)\n• Fade (professional)`,
-
-                aftereffects: `In Adobe After Effects:\n\nSTEP-BY-STEP:\n1. Create composition with footage\n2. Go to Effects > Transition\n3. Drag transition between layers\n4. Set duration (0.5-2 seconds)\n5. Adjust direction in Effect Controls\n6. Set keyframes at transition point\n7. Preview with spacebar\n8. Render\n\nADVANCED:\n• Use Masks for custom effects\n• Combine transitions for unique styles`,
-
-                davinci: `In DaVinci Resolve:\n\nSTEP-BY-STEP:\n1. Go to Edit page\n2. Click "Transitions" panel (left)\n3. Select transition type\n4. Drag between clips on timeline\n5. In Inspector panel:\n   - Set duration (0.3-0.5s)\n   - Adjust direction\n6. Preview with spacebar\n7. Export\n\nADVANTAGES:\n• Free version has great transitions\n• Smooth 4K support\n• Real-time preview`,
-
-                finalcut: `In Final Cut Pro:\n\nSTEP-BY-STEP:\n1. Arrange clips on timeline\n2. Click Transitions menu\n3. Drag transition between clips\n4. In Inspector:\n   - Adjust duration\n   - Fine-tune parameters\n5. Preview with spacebar\n6. Export\n\nKEYBOARD SHORTCUT:\n• Cmd+T: Add default transition`
+                capcut: `CapCut — Smooth Transition:\n1. Open your project and select the two clips on the timeline.\n2. Tap the small white square between clips (or select the first clip and choose "Transition").\n3. Pick a transition (e.g., Smooth, Slide).\n4. Adjust duration to taste and preview.`,
+                premiere: `Premiere Pro — Apply a Transition:\n1. Place clips adjacent on timeline.\n2. Open Effects > Video Transitions.\n3. Drag a transition (e.g., Cross Dissolve) to the cut.\n4. Trim duration in timeline or Effect Controls.`,
+                aftereffects: `After Effects — Create a Transition:\n1. Place layers in composition.\n2. Use opacity keyframes or add a transition effect from Effects > Transition.\n3. Adjust keyframes or effect settings.\n4. Pre-compose if you want reusable transitions.`,
+                davinci: `DaVinci Resolve — Transition:\n1. In Edit page, open the Effects Library > Transitions.\n2. Drag a transition onto the cut.\n3. Use Inspector to modify duration and properties.`,
+                finalcut: `Final Cut Pro — Transition:\n1. In the Transitions Browser, choose a transition.\n2. Drag it to the timeline between clips.\n3. Adjust duration by dragging edges or using the Inspector.`
             },
-
             colorgrading: {
-                davinci: `In DaVinci Resolve (Best for Color):\n\nSTEP-BY-STEP:\n1. Go to Color page\n2. Select clip from timeline\n3. Find Lift/Gamma/Gain panel:\n   - Lift: Shadows\n   - Gamma: Midtones\n   - Gain: Highlights\n4. Use Curves for precision\n5. Adjust Saturation\n6. Use Color Wheels\n7. Apply LUTs for cinema look\n\nWORKFLOW:\n1. Primary correction\n2. Use curves\n3. Secondary correction\n4. Save as preset`,
-
-                capcut: `In CapCut (Quick Color):\n\nSTEP-BY-STEP:\n1. Select video clip\n2. Tap "Adjust"\n3. Adjust sliders:\n   - Brightness\n   - Contrast\n   - Saturation\n   - Hue\n   - Temperature\n4. Use Filters tab for presets\n5. Preview\n6. Export\n\nQUICK CINEMA LOOK:\n• Decrease brightness slightly\n• Increase contrast\n• Add warm temperature`,
-
-                premiere: `In Premiere Pro (Lumetri):\n\nSTEP-BY-STEP:\n1. Select video clip\n2. Effects > Color Correction > Lumetri Color\n3. In Effect Controls:\n   - Shadows: Dark areas\n   - Midtones: Middle brightness\n   - Highlights: Bright areas\n   - Saturation: Color intensity\n4. Use Curves for advanced work\n5. Apply LUTs\n6. Save as preset\n\nPRO TIP:\n• Save presets for consistency`
+                davinci: `DaVinci — Basic Color Grade:\n1. Go to Color page.\n2. Use Lift, Gamma, Gain to balance shadows/mids/highlights.\n3. Add saturation and contrast tweaks, then node-based corrections.`,
+                capcut: `CapCut — Quick Color Adjust:\n1. Select clip > Adjust.\n2. Tweak Brightness, Contrast, Saturation, Temperature.\n3. Use presets or save custom filter.`
             },
-
-            export: {
-                capcut: `In CapCut (Export):\n\nSTEP-BY-STEP:\n1. Finish editing\n2. Tap "Export"\n3. Choose quality:\n   - 1080p: YouTube (recommended)\n   - 720p: Instagram, TikTok\n   - 480p: Quick previews\n   - 4K: High-quality\n4. Frame rate:\n   - 24fps: Cinematic\n   - 30fps: Smooth (default)\n   - 60fps: Action, sports\n5. Format: MP4 (universal)\n6. Export and wait\n\nFILE SIZE:\n• 1080p ≈ 300-500MB per 10 min`,
-
-                premiere: `In Premiere Pro (Export):\n\nSTEP-BY-STEP:\n1. File > Export > Media (Ctrl+Alt+M)\n2. Choose preset:\n   - YouTube 1080p\n   - Instagram\n   - Facebook\n3. Set codec: H.264\n4. Frame rate: Match project (24/30/60fps)\n5. Bitrate:\n   - 1080p: 8-12 Mbps\n   - 4K: 35-45 Mbps\n   - Instagram: 6-8 Mbps\n6. Click Export\n7. Wait for encoding\n\nAUDIO:\n• 48kHz sample rate\n• Stereo (2 channels)\n• 256-320 kbps bitrate`,
-
-                aftereffects: `In After Effects (Render):\n\nSTEP-BY-STEP:\n1. Composition > Add to Render Queue\n2. Set Output Module\n3. Choose H.264 codec\n4. Set bitrate\n5. Choose output location\n6. Click "Render"\n7. Wait (can take time)\n\nRENDER TIME:\n• Simple: 5-15 min per minute\n• Complex VFX: 30+ min per minute\n• 4K takes 2-3x longer\n\nPRO TIP:\n• Use Draft Settings while working\n• Switch to Best for final export`
-            },
-
             greenscreen: {
-                davinci: `In DaVinci Resolve (Professional):\n\nSTEP-BY-STEP:\n1. Go to Color page\n2. Select green screen clip\n3. Click "Qualifier" tool\n4. Use eyedropper on green\n5. Adjust:\n   - Hue Range: Isolate green\n   - Saturation: Control selection\n   - Lightness: Match brightness\n6. Add blur for smooth edges\n7. Check with different backgrounds\n\nEDGE REFINEMENT:\n• Blur: Smooth edges\n• Shrink: Tighten selection\n• Grow: Expand selection\n\nPRO TIP:\n• Use multiple nodes for precision`,
-
-                capcut: `In CapCut (Quick Green Screen):\n\nSTEP-BY-STEP:\n1. Import green screen video\n2. Place above background on timeline\n3. Select green screen clip\n4. Tap "Chroma Key"\n5. Click on green to select\n6. Adjust sliders:\n   - Similarity: 50-80\n   - Smoothness: 30-60\n7. Preview result\n8. Export\n\nIF EDGES LOOK JAGGED:\n• Increase Smoothness\n\nIF TOO MUCH GREEN REMAINS:\n• Increase Similarity\n\nIF SUBJECT IS CUT OFF:\n• Decrease Similarity`,
-
-                premiere: `In Premiere Pro (Ultra Key):\n\nSTEP-BY-STEP:\n1. Place green screen on V2\n2. Place background on V1\n3. Select green screen clip\n4. Effects > Keying > Ultra Key\n5. Use eyedropper on green\n6. Adjust:\n   - Tolerance: 20-40\n   - Highlight: Watch this\n7. Add Spill Suppressor\n8. Fine-tune Matte Cleanup\n9. Export\n\nSPILL SUPPRESSION:\n• Removes green tint from edges\n• Adjust Saturation & Lightness\n\nPREMIERE ADVANTAGE:\n• Very accurate keying`
+                premiere: `Premiere Pro — Ultra Key:\n1. Put green screen clip above background.\n2. Select clip > Effects > Ultra Key.\n3. Use eyedropper to sample green, adjust Matte settings.`,
+                davinci: `DaVinci — Qualifier Keying:\n1. In Color page, use Qualifier to sample the green.\n2. Refine selection with matte and blur, then clean with nodes.`,
+                capcut: `CapCut — Remove Background (Chroma Key):\n1. Select the clip.\n2. Choose Chroma Key, sample the background color.\n3. Adjust Intensity/Shadow until clean.`
             },
-
+            export: {
+                premiere: `Premiere Pro — Export (H.264):\n1. File > Export > Media.\n2. Choose Format: H.264 and a preset (YouTube 1080p).\n3. Set bitrate and export.`
+            },
             textanimation: {
-                capcut: `In CapCut (Text Animation):\n\nSTEP-BY-STEP:\n1. Tap "Text" button\n2. Type your text\n3. Position on screen\n4. Customize:\n   - Font\n   - Size\n   - Color\n5. Tap "Animation"\n6. Choose:\n   - Entrance (Fade In, Slide)\n   - Exit effect\n7. Adjust:\n   - Duration\n   - Speed\n8. Preview\n9. Export\n\nCABPCUT FEATURES:\n• 30+ animations\n• Adjustable speed\n• Real-time preview`,
-
-                aftereffects: `In After Effects (Professional):\n\nSTEP-BY-STEP:\n1. Type > Text layer\n2. Type your text\n3. Select text layer\n4. Animation > Animate Text\n5. Choose property:\n   - Position (move)\n   - Scale (grow/shrink)\n   - Opacity (fade)\n   - Rotation (spin)\n6. Set keyframes:\n   - Stopwatch: Start recording\n   - Move playhead\n   - Change values\n7. Preview with spacebar\n\nADVANCED:\n• Text on path\n• Separate dimensions\n• Use expressions`,
-
-                premiere: `In Premiere Pro (Text Animation):\n\nSTEP-BY-STEP:\n1. Click Essential Graphics\n2. Create text layer\n3. Type and style\n4. Select text layer\n5. Right-click > Show Transform\n6. Animate:\n   - Position (move)\n   - Scale (resize)\n   - Opacity (fade)\n7. Set keyframes:\n   - Click stopwatch\n   - Move playhead\n   - Change values\n8. Or use Motion Presets\n9. Export\n\nMOTION PRESETS:\n• Professional animations included\n• Drag onto text\n• Customize timing`
+                aftereffects: `After Effects — Text Animation:\n1. Create a Text layer.\n2. Use Animate > Position/Opacity/Scale and add Range Selector keyframes.\n3. Use presets for quick animations.`,
+                capcut: `CapCut — Text Animation:\n1. Tap Text, type and style.\n2. Use Animations tab to pick an In/Out animation.`
             },
-
-            general: `Welcome to AI Editing Assistant! 🎬\n\nI can help with:\n\n✂️ TRANSITIONS\n🎨 COLOR GRADING\n📥 EXPORT/RENDERING\n🟢 GREEN SCREEN\n✨ TEXT ANIMATIONS\n\nJUST ASK:\n• "How do I add a transition in CapCut?"\n• "Show me color grading in DaVinci"\n• "How do I export for YouTube?"\n• "How do I green screen?"\n\nI'll give you step-by-step instructions! 🚀`
+            general: `Tell me what you want to do (e.g., \"Add a smooth transition in CapCut\" or \"Key a green screen in Premiere\"). If you tell me the platform I will give step-by-step instructions.`
         };
 
-        function openAIChat() {
-            document.getElementById('aiChatModal').classList.add('active');
-            setTimeout(() => document.getElementById('chatInput').focus(), 100);
-        }
+        // UI helpers
+        const aiChatModal = document.getElementById('aiChatModal');
+        const openChatBtn = document.getElementById('openChatBtn');
+        const closeChatBtn = document.getElementById('closeChatBtn');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatMessages = document.getElementById('chatMessages');
 
-        function closeAIChat() {
-            document.getElementById('aiChatModal').classList.remove('active');
-        }
+        function openAIChat() { aiChatModal.classList.add('active'); setTimeout(()=>chatInput.focus(),150); }
+        function closeAIChat(){ aiChatModal.classList.remove('active'); }
 
-        function handleEnter(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
-        }
+        openChatBtn.addEventListener('click', openAIChat);
+        closeChatBtn.addEventListener('click', closeAIChat);
 
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            const sendBtn = document.getElementById('sendBtn');
-            
-            if (!message) return;
-            
+        chatInput.addEventListener('keypress', (e)=>{ if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
+        sendBtn.addEventListener('click', sendMessage);
+
+        function sendMessage(){
+            const text = chatInput.value.trim();
+            if (!text) return;
+            addMessage(text, 'user');
+            chatInput.value = '';
             sendBtn.disabled = true;
-            addMessage(message, 'user');
-            input.value = '';
             addTypingIndicator();
-            
-            setTimeout(() => {
+            // simulate quick local response
+            setTimeout(()=>{
                 removeTypingIndicator();
-                const response = generateAIResponse(message);
-                addMessage(response, 'ai');
+                const resp = generateAIResponse(text);
+                addMessage(resp, 'ai');
                 sendBtn.disabled = false;
-                input.focus();
+                chatInput.focus();
             }, 500);
         }
 
-        function generateAIResponse(userMessage) {
+        function addMessage(text, sender){
+            const el = document.createElement('div');
+            el.className = 'message ' + (sender === 'user' ? 'user-message' : 'ai-message');
+            el.textContent = text;
+            chatMessages.appendChild(el);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addTypingIndicator(){
+            const el = document.createElement('div');
+            el.id = 'typing-indicator';
+            el.className = 'message ai-message';
+            el.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+            chatMessages.appendChild(el);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        function removeTypingIndicator(){ const ind = document.getElementById('typing-indicator'); if (ind) ind.remove(); }
+
+        function generateAIResponse(userMessage){
             const message = userMessage.toLowerCase();
-            
-            if (message.includes('transition') || message.includes('between clips') || message.includes('between two')) {
+            // Transitions
+            if (message.includes('transition') || message.includes('between clips')){
                 if (message.includes('capcut')) return editingKnowledge.transitions.capcut;
                 if (message.includes('premiere')) return editingKnowledge.transitions.premiere;
-                if (message.includes('after effects') || message.includes('ae')) return editingKnowledge.transitions.aftereffects;
+                if (message.includes('after') || message.includes('aftereffects') || message.includes('ae')) return editingKnowledge.transitions.aftereffects;
                 if (message.includes('davinci') || message.includes('resolve')) return editingKnowledge.transitions.davinci;
                 if (message.includes('final cut') || message.includes('fcp')) return editingKnowledge.transitions.finalcut;
-                return "Which platform? CapCut, Premiere Pro, After Effects, DaVinci, or Final Cut Pro?\n\nI'll give you step-by-step instructions!";
+                return 'Which platform? (CapCut, Premiere, After Effects, DaVinci, Final Cut)';
             }
-            
-            if (message.includes('color') || message.includes('grade') || message.includes('grading') || message.includes('color correction') || message.includes('look')) {
-                if (message.includes('davinci') || message.includes('resolve')) return editingKnowledge.colorgrading.davinci;
-                if (message.includes('capcut')) return editingKnowledge.colorgrading.capcut;
-                if (message.includes('premiere')) return editingKnowledge.colorgrading.premiere;
-                return "DaVinci Resolve is best for color grading!\n\nOr use:\n• CapCut (quick)\n• Premiere Pro\n\nWhich platform?";
+            // Color
+            if (message.includes('color') || message.includes('grade')){
+                if (message.includes('davinci') || message.includes('resolve')) return editingKnowledge.colorgrading?.davinci || editingKnowledge.colorgrading;
+                if (message.includes('capcut')) return editingKnowledge.colorgrading?.capcut || editingKnowledge.colorgrading;
+                return 'DaVinci Resolve is best for color grading. Which platform are you using?';
             }
-            
-            if (message.includes('export') || message.includes('render') || message.includes('save') || message.includes('output')) {
-                if (message.includes('capcut')) return editingKnowledge.export.capcut;
-                if (message.includes('premiere')) return editingKnowledge.export.premiere;
-                if (message.includes('after effects')) return editingKnowledge.export.aftereffects;
-                return "Which platform?\n• CapCut\n• Premiere Pro\n• After Effects\n\nI'll guide you!";
-            }
-            
-            if (message.includes('green screen') || message.includes('chroma') || message.includes('keying') || message.includes('background')) {
+            // Greenscreen
+            if (message.includes('green screen') || message.includes('chroma') || message.includes('keying')){
+                if (message.includes('premiere')) return editingKnowledge.greenscreen.premiere;
                 if (message.includes('davinci') || message.includes('resolve')) return editingKnowledge.greenscreen.davinci;
                 if (message.includes('capcut')) return editingKnowledge.greenscreen.capcut;
-                if (message.includes('premiere')) return editingKnowledge.greenscreen.premiere;
-                return "Which platform?\n• DaVinci (professional)\n• CapCut (quick)\n• Premiere Pro (accurate)\n\nTell me!";
+                return 'Which platform? (DaVinci, Premiere, CapCut)';
             }
-            
-            if (message.includes('text') || message.includes('title')) {
+            // Export
+            if (message.includes('export') || message.includes('render')){
+                if (message.includes('premiere')) return editingKnowledge.export.premiere;
+                return 'Which platform do you want export settings for? (Premiere, After Effects, CapCut, DaVinci)';
+            }
+            // Text / titles
+            if (message.includes('text') || message.includes('title') || message.includes('subtitle')){
+                if (message.includes('after') || message.includes('aftereffects') || message.includes('ae')) return editingKnowledge.textanimation.aftereffects;
                 if (message.includes('capcut')) return editingKnowledge.textanimation.capcut;
-                if (message.includes('after effects')) return editingKnowledge.textanimation.aftereffects;
-                if (message.includes('premiere')) return editingKnowledge.textanimation.premiere;
-                return "Which platform?\n• CapCut (easy)\n• Premiere Pro\n• After Effects (advanced)\n\nLet me know!";
+                return 'Which platform for text animation? (After Effects, Premiere, CapCut)';
             }
-            
+            // fallback
             return editingKnowledge.general;
         }
 
-        function addTypingIndicator() {
-            const messagesDiv = document.getElementById('chatMessages');
-            const messageEl = document.createElement('div');
-            messageEl.className = 'message ai-message';
-            messageEl.id = 'typing-indicator';
-            messageEl.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
-            messagesDiv.appendChild(messageEl);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-
-        function removeTypingIndicator() {
-            const indicator = document.getElementById('typing-indicator');
-            if (indicator) indicator.remove();
-        }
-
-        function addMessage(text, sender) {
-            const messagesDiv = document.getElementById('chatMessages');
-            const messageEl = document.createElement('div');
-            messageEl.className = `message ${sender === 'user' ? 'user-message' : 'ai-message'}`;
-            messageEl.textContent = text;
-            messagesDiv.appendChild(messageEl);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
+        // Accessibility: close chat on ESC
+        document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeAIChat(); });
     </script>
 </body>
-</html><!-- Add this inside your HTML body -->
-<button id="chat-start">Start Chat</button>
-
-<script>
-  function startChat() {
-    // Replace this with your chat initialization logic
-    alert("Chat started! Connect to your AI backend here.");
-  }
-
-  const chatButton = document.getElementById("chat-start");
-
-  // Handle both desktop clicks and mobile taps
-  chatButton.addEventListener("click", startChat);
-  chatButton.addEventListener("touchstart", function(e) {
-    e.preventDefault(); // Prevents double firing
-    startChat();
-  });
-</script>
-
-<style>
-  /* Make sure the button is visible and tappable */
-  #chat-start {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    font-size: 16px;
-    background: #0078d7; /* Microsoft blue */
-    color: white;
-    border: none;
-    border-radius: 6px;
-    z-index: 9999; /* Keeps it above other elements */
-    cursor: pointer;
-  }
-</style>
-<!-- Add inside <body>, before </body> -->
-<button id="chat-start">💬 Chat</button>
-
-<script>
-  function startChat() {
-    // Replace with your AI chat logic
-    alert("Chat started!");
-  }
-
-  const chatButton = document.getElementById("chat-start");
-
-  // Use pointer events (covers mouse + touch)
-  chatButton.addEventListener("pointerdown", function(e) {
-    e.preventDefault();
-    startChat();
-  });
-</script>
-
-<style>
-  #chat-start {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 14px 22px;
-    font-size: 18px;
-    background: #0078d7;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    z-index: 9999;
-    cursor: pointer;
-    touch-action: manipulation; /* ensures taps register */
-  }
-</style>
-<!-- Chat container -->
-<div id="chat-container">
-  <div id="chat-messages"></div>
-  <div id="chat-input-area">
-    <input 
-      type="text" 
-      id="chat-input" 
-      placeholder="Type your message..." 
-      autocomplete="off"
-    />
-    <button id="send-btn">Send</button>
-  </div>
-</div>
-
-<script>
-  const input = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("send-btn");
-  const messages = document.getElementById("chat-messages");
-
-  sendBtn.addEventListener("click", () => {
-    const message = input.value.trim();
-    if (message) {
-      // Show the message in the chat window
-      const msgDiv = document.createElement("div");
-      msgDiv.textContent = "You: " + message;
-      messages.appendChild(msgDiv);
-
-      // Clear input
-      input.value = "";
-
-      // Here you would call your AI backend API
-      // For now, just show a placeholder response
-      const aiDiv = document.createElement("div");
-      aiDiv.textContent = "AI: (response goes here)";
-      messages.appendChild(aiDiv);
-    }
-  });
-</script>
-
-<style>
-  #chat-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    max-height: 40%;
-    background: #f9f9f9;
-    border-top: 1px solid #ccc;
-    display: flex;
-    flex-direction: column;
-    font-family: sans-serif;
-  }
-  #chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-    font-size: 14px;
-  }
-  #chat-input-area {
-    display: flex;
-    padding: 10px;
-    background
-<!-- Chat box -->
-<div id="chat-box">
-  <div id="chat-messages"></div>
-  <input 
-    type="text" 
-    id="chat-input" 
-    placeholder="Type your message..." 
-    autocomplete="off"
-  />
-  <button id="send-btn">Send</button>
-</div>
-
-<script>
-  const input = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("send-btn");
-  const messages = document.getElementById("chat-messages");
-
-  sendBtn.addEventListener("click", () => {
-    const message = input.value.trim();
-    if (message) {
-      const msgDiv = document.createElement("div");
-      msgDiv.textContent = "You: " + message;
-      messages.appendChild(msgDiv);
-
-      input.value = "";
-
-      const aiDiv = document.createElement("div");
-      aiDiv.textContent = "AI: (response goes here)";
-      messages.appendChild(aiDiv);
-    }
-  });
-</script>
-
-<style>
-  #chat-box {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #f1f1f1;
-    border-top: 1px solid #ccc;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    z-index: 9999;
-  }
-  #chat-messages {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-    font-size: 14px;
-  }
-  #chat-input {
-    padding: 10px;
-    font-size: 16px;
-    flex: 1;
-  }
-  #send-btn {
-    padding: 10px 16px;
-    margin-top: 8px;
-    background: #0078d7;
-    color: white;
-    border: none;
-    border-radius: 4px;
-  }
-</style>
-<div id="chat-container">
-  <input 
-    type="text" 
-    id="chat-input" 
-    placeholder="Ask me…" 
-    autocomplete="off"
-  />
-  <button id="send-btn">Send</button>
-</div>
-
-<script>
-  const input = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("send-btn");
-
-  sendBtn.addEventListener("click", () => {
-    const message = input.value.trim();
-    if (message) {
-      alert("You typed: " + message); 
-      input.value = "";
-    }
-  });
-</script>
-
-<style>
-  #chat-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #f1f1f1;
-    padding: 10px;
-    display: flex;
-    z-index: 9999;
-  }
-  #chat-input {
-    flex: 1;
-    padding: 12px;
-    font-size: 16px;
-  }
-  #send-btn {
-    padding: 12px 18px;
-    margin-left: 8px;
-    background: #0078d7;
-    color: white;
-    border: none;
-    border-radius: 4px;
-  }
-</style>
-<!-- Start Chatting button -->
-<button id="chat-start">Start Chatting</button>
-
-<!-- Chat box (hidden at first) -->
-<div id="chat-box" style="display:none;">
-  <div id="chat-messages"></div>
-  <input 
-    type="text" 
-    id="chat-input" 
-    placeholder="Ask me…" 
-    autocomplete="off"
-  />
-  <button id="send-btn">Send</button>
-</div>
-
-<script>
-  const chatButton = document.getElementById("chat-start");
-  const chatBox = document.getElementById("chat-box");
-  const input = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("send-btn");
-  const messages = document.getElementById("chat-messages");
-
-  // Show chat box when button is pressed
-  chatButton.addEventListener("click", () => {
-    chatBox.style.display = "flex";   // make it visible
-    input.focus();                    // open keyboard on mobile
-  });
-
-  // Send message
-  sendBtn.addEventListener("click", () => {
-    const message = input.value.trim();
-    if (message) {
-      const msgDiv = document.createElement("div");
-      msgDiv.textContent = "You: " + message;
-      messages.appendChild(msgDiv);
-
-      input.value = "";
-
-      const aiDiv = document.createElement("div");
-      aiDiv.textContent = "AI: (response goes here)";
-      messages.appendChild(aiDiv);
-    }
-  });
-</script>
-
-<style>
-  #chat-box {
-    position: fixed;
-    bottom
-<!-- Start Chatting button -->
-<button id="chat-start">Start Chatting</button>
-
-<!-- Chat box (hidden at first) -->
-<div id="chat-box">
-  <div id="chat-messages"></div>
-  <input 
-    type="text" 
-    id="chat-input" 
-    placeholder="Ask me…" 
-    autocomplete="off"
-  />
-  <button id="send-btn">Send</button>
-</div>
-
-<script>
-  const chatButton = document.getElementById("chat-start");
-  const chatBox = document.getElementById("chat-box");
-  const input = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("send-btn");
-  const messages = document.getElementById("chat-messages");
-
-  // Only show chat box on mobile when button is pressed
-  chatButton.addEventListener("click", () => {
-    if (window.innerWidth <= 768) { // mobile breakpoint
-      chatBox.style.display = "flex";
-      input.focus(); // open keyboard
-    }
-  });
-
-  sendBtn.addEventListener("click", () => {
-    const message = input.value.trim();
-    if (message) {
-      const msgDiv = document.createElement("div");
-      msgDiv.textContent = "You: " + message;
-      messages.appendChild(msgDiv);
-
-      input.value = "";
-
-      const aiDiv = document.createElement("div");
-      aiDiv.textContent = "AI: (response goes here)";
-      messages.appendChild(aiDiv);
-    }
-  });
-</script>
-
-<style>
-  /* Hide
-<!-- Chat box (only for mobile) -->
-<div id="chat-box">
-  <input type="text" id="chat-input" placeholder="Ask me…" />
-  <button id="send-btn">Send</button>
-</div>
-
-<style>
-  /* Hide chat box everywhere by default */
-  #chat-box { display: none; }
-
-  /* Show chat box only on screens 768px wide or less (mobile) */
-  @media (max-width: 768px) {
-    #chat-box {
-      display: flex;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #f1f1f1;
-      padding: 10px;
-      flex-direction: column;
-      z-index: 9999;
-    }
-  }
-</style>
-
-<script>
-  const chatButton = document.getElementById("chat-start");
-  const chatBox = document.getElementById("chat-box");
-  const input = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("send-btn");
-
-  chatButton.addEventListener("click", () => {
-    if (window.innerWidth <= 768) { // only mobile
-      chatBox.style.display = "flex";
-      input.focus();
-    }
-  });
-
-  sendBtn.addEventListener("click", () => {
-    alert("You typed: " + input.value);
-    input.value = "";
-  });
-</script>
-<!-- Chat box (only for mobile) -->
-<div id="chat-box">
-  <input type="text" id="chat-input" placeholder="Ask me…" />
-  <button id="send-btn">Send</button>
-</div>
-
-<style>
-  /* Hide chat box everywhere by default */
-  #chat-box { display: none; }
-
-  /* Show chat box only on screens 768px wide or less (mobile) */
-  @media (max-width: 768px) {
-    #chat-box {
-      display: flex;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #f1f1f1;
-      padding: 10px;
-      flex-direction: column;
-      z-index: 9999;
-    }
-  }
-</style>
-
-<script>
-  const chatButton = document.getElementById("chat-start");
-  const chatBox = document.getElementById("chat-box");
-  const input = document.getElementById("chat-input");
-  const sendBtn = document.getElementById("send-btn");
-
-  chatButton.addEventListener("click", () => {
-    if (window.innerWidth <= 768) { // only mobile
-      chatBox.style.display = "flex";
-      input.focus();
-    }
-  });
-
-  sendBtn.addEventListener("click", () => {
-    alert("You typed: " + input.value);
-    input.value = "";
-  });
-</script>
+</html>
